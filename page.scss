@@ -1,8 +1,18 @@
+body > * {
+  // transform: scale(110%);
+}
+
 #pInit100px {
   font-size: 100px;
   line-height: 1.2;
+  letter-spacing: 0;
 }
 
 #pInit16px {
   line-height: inherit;
+  letter-spacing: 4px;
+}
+
+h1 {
+  // letter-spacing: ;
 }

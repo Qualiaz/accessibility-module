@@ -72,7 +72,37 @@ class Accessibility {
           const newLineHeight =
             text.dataset.initialLineHeight * this.state.lineHeight;
           text.style.lineHeight = Math.floor(newLineHeight) + "px";
-          console.log(newLineHeight);
+        });
+      },
+    },
+    letterSpacing: {
+      increase() {
+        this._resizeLetterSpacing("increase");
+      },
+
+      decrease() {
+        this._resizeLetterSpacing("decrease");
+      },
+
+      _resizeLetterSpacing(direction) {
+        const texts = document.querySelectorAll("p, h1, h2,h3");
+        texts.forEach((text) => {
+          const elStyles = window.getComputedStyle(text);
+          let letterSpacing =
+            elStyles.getPropertyValue("letter-spacing") === "normal"
+              ? 0
+              : parseFloat(elStyles.getPropertyValue("letter-spacing"));
+
+          if (!text.dataset.initialLetterSpacing) {
+            text.dataset.initialLetterSpacing = letterSpacing;
+          }
+
+          if (direction === "increase") {
+            text.style.letterSpacing = ++letterSpacing + "px";
+          }
+          if (direction === "decrease") {
+            text.style.letterSpacing = --letterSpacing + "px";
+          }
         });
       },
     },

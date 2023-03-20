@@ -7,6 +7,9 @@ const minusBtn = document.getElementById("minus");
 const plusLineHeightBtn = document.getElementById("plusLineHeightBtn");
 const minusLineHeightBtn = document.getElementById("minusLineHeightBtn");
 
+const plusLetterSpacing = document.getElementById("plusLetterSpacing");
+const minusLetterSpacing = document.getElementById("minusLetterSpacing");
+
 plusBtn.addEventListener("click", () => {
   accessibility.contentAdjustments.fontSizing.increase();
 });
@@ -21,4 +24,12 @@ plusLineHeightBtn.addEventListener("click", () => {
 
 minusLineHeightBtn.addEventListener("click", () => {
   accessibility.contentAdjustments.lineHeight.increase();
+});
+
+plusLetterSpacing.addEventListener("click", () => {
+  accessibility.contentAdjustments.letterSpacing.increase();
+});
+
+minusLetterSpacing.addEventListener("click", () => {
+  accessibility.contentAdjustments.letterSpacing.decrease();
 });
