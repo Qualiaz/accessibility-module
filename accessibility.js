@@ -14,28 +14,65 @@ class Accessibility {
       },
 
       _resizeFont(direction) {
-        const paragraphs = document.querySelectorAll("p");
+        const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
         if (direction === "increase") {
-          this.state.textSize += 0.01;
+          this.state.textSize += 0.05;
         }
         if (direction === "decrease") {
-          this.state.textSize -= 0.01;
+          this.state.textSize -= 0.05;
         }
-        paragraphs.forEach((paragraph) => {
-          const elStyles = window.getComputedStyle(paragraph);
+        texts.forEach((text) => {
+          const elStyles = window.getComputedStyle(text);
           const elFontSize = elStyles.getPropertyValue("font-size");
 
           const size = parseInt(elFontSize);
-          if (!paragraph.dataset.initialFontSize) {
-            paragraph.dataset.initialFontSize = size;
+          if (!text.dataset.initialFontSize) {
+            text.dataset.initialFontSize = size;
           }
 
-          const unit = elFontSize.substring(size.toString().length);
+          const newSize = text.dataset.initialFontSize * this.state.textSize;
 
-          const newSize =
-            paragraph.dataset.initialFontSize * this.state.textSize;
+          text.style.fontSize = Math.floor(newSize) + "px";
+        });
+      },
+    },
+    lineHeight: {
+      state: {
+        lineHeight: 1,
+      },
+      increase() {
+        this._resizeLineHeight("increase");
+      },
 
-          paragraph.style.fontSize = Math.floor(newSize) + unit;
+      decrease() {
+        this._resizeLineHeight("decrease");
+      },
+
+      _resizeLineHeight(direction) {
+        const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
+        if (direction === "increase") {
+          this.state.lineHeight += 0.1;
+        }
+        if (direction === "decrease") {
+          this.state.lineHeight -= 0.1;
+        }
+        texts.forEach((text) => {
+          const elStyles = window.getComputedStyle(text);
+          const elFontSize = parseFloat(elStyles.getPropertyValue("font-size"));
+
+          const lineHeight =
+            elStyles.getPropertyValue("line-height") === "normal"
+              ? elFontSize * 1.2
+              : parseFloat(elStyles.getPropertyValue("line-height"));
+
+          if (!text.dataset.initialLineHeight) {
+            text.dataset.initialLineHeight = lineHeight;
+          }
+
+          const newLineHeight =
+            text.dataset.initialLineHeight * this.state.lineHeight;
+          text.style.lineHeight = Math.floor(newLineHeight) + "px";
+          console.log(newLineHeight);
         });
       },
     },
