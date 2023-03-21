@@ -162,6 +162,38 @@ class Accessibility {
       },
     },
   };
+  colorAdjustments = {
+    contrast: {
+      state: {
+        curContrast: 100,
+      },
+      increase() {
+        const body = document.querySelector("body");
+        this.state.curContrast += 5;
+        body.style.filter = `contrast(${this.state.curContrast}%)`;
+      },
+      decrease() {
+        const body = document.querySelector("body");
+        this.state.curContrast -= 5;
+        body.style.filter = `contrast(${this.state.curContrast}%)`;
+      },
+    },
+    saturation: {
+      state: {
+        curSaturation: 100,
+      },
+      increase() {
+        const body = document.querySelector("body");
+        this.state.curSaturation += 5;
+        body.style.filter = `saturate(${this.state.curSaturation}%)`;
+      },
+      decrease() {
+        const body = document.querySelector("body");
+        this.state.curSaturation -= 5;
+        body.style.filter = `saturate(${this.state.curSaturation}%)`;
+      },
+    },
+  };
 }
 
 export default new Accessibility();

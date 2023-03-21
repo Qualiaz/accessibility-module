@@ -14,6 +14,12 @@ const highlightTitles = document.getElementById("highlightTitle");
 
 const highlightLinks = document.getElementById("highlightLinks");
 
+const plusContrast = document.getElementById("plusContrast");
+const minusContrast = document.getElementById("minusContrast");
+
+const plusSaturation = document.getElementById("plusSaturation");
+const minusSaturation = document.getElementById("minusSaturation");
+
 plusBtn.addEventListener("click", () => {
   accessibility.contentAdjustments.fontSizing.increase();
 });
@@ -54,4 +60,20 @@ highlightLinks.addEventListener("click", () => {
   } else {
     accessibility.contentAdjustments.highlightLinks.off();
   }
+});
+
+plusContrast.addEventListener("click", () => {
+  accessibility.colorAdjustments.contrast.increase();
+});
+
+minusContrast.addEventListener("click", () => {
+  accessibility.colorAdjustments.contrast.decrease();
+});
+
+plusSaturation.addEventListener("click", () => {
+  accessibility.colorAdjustments.saturation.increase();
+});
+
+minusSaturation.addEventListener("click", () => {
+  accessibility.colorAdjustments.saturation.decrease();
 });
