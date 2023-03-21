@@ -106,6 +106,61 @@ class Accessibility {
         });
       },
     },
+    highlightTitles: {
+      state: {
+        isOn: false,
+      },
+      on() {
+        const headers = document.querySelectorAll("h1, h2, h3, h4, h5 ,h6");
+        headers.forEach((header) => {
+          const styles = window.getComputedStyle(header);
+          const outline = styles.outline;
+
+          if (!header.dataset.initialOutline) {
+            header.dataset.initialOutline = outline;
+          }
+
+          header.style.outline = "2px solid #a81a2d";
+
+          this.state.isOn = true;
+        });
+      },
+      off() {
+        const headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+        headers.forEach((header) => {
+          console.log(header.dataset.initialOutline);
+          header.style.outline = header.dataset.initialOutline;
+          this.state.isOn = false;
+        });
+      },
+    },
+    highlightLinks: {
+      state: {
+        isOn: false,
+      },
+      on() {
+        const anchors = document.querySelectorAll("a");
+        anchors.forEach((anchor) => {
+          const styles = window.getComputedStyle(anchor);
+          const outline = styles.outline;
+
+          if (!anchor.dataset.initialOutline) {
+            anchor.dataset.initialOutline = outline;
+          }
+
+          anchor.style.outline = "2px solid #1744c0";
+
+          this.state.isOn = true;
+        });
+      },
+      off() {
+        const anchors = document.querySelectorAll("a");
+        anchors.forEach((anchor) => {
+          anchor.style.outline = anchor.dataset.initialOutline;
+          this.state.isOn = false;
+        });
+      },
+    },
   };
 }
 
