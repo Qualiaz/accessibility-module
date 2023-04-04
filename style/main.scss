@@ -1,7 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Indie+Flower&family=Roboto+Condensed:ital,wght@0,400;0,700;1,300;1,400&display=swap");
 
 $mainBtnBackground: #f1f1f1;
-
 $background: #c0d9ff;
 $offTogledBtn: lighten($background, 5%);
 $text: #1c54a8;
@@ -65,12 +64,20 @@ $sectionBackground: #eaf1fc;
     flex: 4;
     display: flex;
     justify-content: center;
+    font-size: 20px;
   }
 
   &__close-btn-wrapper {
     flex: 1;
     display: flex;
     justify-content: end;
+    align-items: center;
+    .close-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      height: 18px;
+    }
   }
 }
 
@@ -78,7 +85,7 @@ $sectionBackground: #eaf1fc;
 #accessibilityMenu {
   background-color: $background;
   //   height: 40rem;
-  width: 480px;
+  // width: 480px;
   position: fixed;
   bottom: 3rem;
   right: 3rem;
@@ -93,13 +100,14 @@ $sectionBackground: #eaf1fc;
 
 .accessibility-main {
   display: flex;
+  flex-direction: column;
   padding: 1rem;
-  // outline: 1px solid blue;
+  gap: 1rem;
 }
 
 //content adjustment section
-.accessibility-main__content-adjustments {
-  // display: flex;
+.accessibility-main__content-adjustments,
+.accessibility-main__colors-adjustments {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
@@ -110,13 +118,15 @@ $sectionBackground: #eaf1fc;
   padding: 1rem;
   flex-wrap: wrap;
   border-radius: 0.5rem;
-  // font-size: 16px;
+  width: 450px;
 }
 
-.accessibility-content__header {
+.accessibility-content__header,
+.accessibility-color__header {
   grid-column: 1 / span 2;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 // components
@@ -129,14 +139,11 @@ $sectionBackground: #eaf1fc;
   padding: 0.3rem 0.5rem;
   border-radius: 0.5rem;
   height: 65px;
-  // flex: 1;
-  // flex-basis: 50%;
-  // width: 100%;
 }
 
 .up-down-buttons__name-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   gap: 1rem;
   img {
     width: 16px;
@@ -234,7 +241,7 @@ $sectionBackground: #eaf1fc;
   img {
     width: 12px;
     // outline: 1px solid red;
-    margin-right: 5px;
+    margin: 0 10px;
   }
 
   .toggle__name-container {
@@ -285,4 +292,22 @@ $sectionBackground: #eaf1fc;
 .toggle__btn.on::before {
   transform: translateX(65%);
   background-color: $button;
+}
+//
+
+.reset-btn {
+  background: none;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  // margin: 0;
+  // width: 50px;
+  height: 35px;
+  // transform: translateY(-2px);
+}
+.reset-btn-img,
+.close-btn-img {
+  width: 100%;
+  height: 100%;
+  transform: translateY(2px);
 }

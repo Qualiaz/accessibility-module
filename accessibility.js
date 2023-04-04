@@ -292,6 +292,27 @@ class Accessibility {
 
     underlinedTitlesWrapper.appendChild(componentUnderlinedTitles);
     underlinedLinksWrapper.appendChild(componentUnderlinedLinks);
+
+    /// COLORS
+    const colorSubmenu = document.querySelector(
+      ".accessibility-main__colors-adjustments"
+    );
+    const accessibilityContrastWrapper = document.querySelector(
+      ".accessibility-contrast__wrapper"
+    );
+    const accessibilitySaturationWrapper = document.querySelector(
+      ".accessibility-saturation__wrapper"
+    );
+    const componentContrast = this.#createUpDownComponent(
+      "CONTRAST",
+      contrastSVG
+    );
+    const componentSaturation = this.#createUpDownComponent(
+      "SATURATIE",
+      saturationSVG
+    );
+    accessibilityContrastWrapper.appendChild(componentContrast);
+    accessibilitySaturationWrapper.appendChild(componentSaturation);
   }
 
   #createUpDownComponent(name, iconSrc) {
@@ -382,9 +403,32 @@ class Accessibility {
     // document.body.appendChild(toggleContainer);
   }
 
-  createStyle = {
-    mainBtn(bgColor) {},
-  };
+  #createColorSubmenu() {
+    const mainContainer = document.createElement("div");
+    const headerContainer = document.createElement("div");
+    const headerTextSpan = document.createElement("span");
+    const resetBtnWrapper = document.createElement("div");
+    const resetBtn = document.createElement("button");
+    const contrastWrapper = document.createElement("div");
+    const saturationWrapper = document.createElement("div");
+
+    mainContainer.classList.add("accessibility-main__colors-adjustments");
+    headerContainer.classList.add("accessibility-color__header");
+    resetBtnWrapper.classList.add("accessibility-color__reset-btn-wrapper");
+
+    contrastWrapper.classList.add("accessibility-contrast__wrapper");
+    saturationWrapper.classList.add("accessibility-saturation__wrapper");
+
+    headerTextSpan.textContent = "SETARI DE ADJUSTARE CULOARE";
+    resetBtn.textContent = "reset";
+
+    headerContainer.appendChild(headerTextSpan);
+    resetBtnWrapper.appendChild(resetBtn);
+    headerContainer.appendChild(resetBtnWrapper);
+    mainContainer.appendChild(headerContainer);
+    mainContainer.appendChild(contrastWrapper);
+    mainContainer.appendChild(saturationWrapper);
+  }
 }
 
 export default new Accessibility();
