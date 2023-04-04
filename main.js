@@ -1,5 +1,8 @@
 import accessibility from "./accessibility";
 import "./page.scss";
+import "./style/main.scss";
+
+accessibility.activate();
 
 const plusBtn = document.getElementById("plus");
 const minusBtn = document.getElementById("minus");
@@ -76,4 +79,10 @@ plusSaturation.addEventListener("click", () => {
 
 minusSaturation.addEventListener("click", () => {
   accessibility.colorAdjustments.saturation.decrease();
+});
+
+const toggleBtn = document.querySelector(".toggle__btn");
+
+toggleBtn.addEventListener("click", () => {
+  toggleBtn.classList.toggle("on");
 });

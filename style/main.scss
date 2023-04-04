@@ -1,0 +1,288 @@
+@import url("https://fonts.googleapis.com/css2?family=Indie+Flower&family=Roboto+Condensed:ital,wght@0,400;0,700;1,300;1,400&display=swap");
+
+$mainBtnBackground: #f1f1f1;
+
+$background: #c0d9ff;
+$offTogledBtn: lighten($background, 5%);
+$text: #1c54a8;
+$button: #327def;
+$white: #fff;
+$sectionBackground: #eaf1fc;
+
+#accessibilityBtn {
+  width: 30px;
+  height: 3px;
+  background-color: $mainBtnBackground;
+  position: fixed;
+  right: 3px;
+  bottom: 3px;
+  border-radius: 50%;
+  border: none;
+}
+
+#accessibilityBtnIcon {
+  width: 21px;
+  transform: translateY(0.1rem);
+}
+
+//// HEADER ////
+.accessibility-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+
+  &__language-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    background-color: $white;
+    z-index: 8997;
+    padding: 0.3rem;
+    border-radius: 1rem;
+    width: 4rem;
+    flex: 1;
+    img {
+      width: 24px;
+      z-index: 8999;
+    }
+
+    .accessibility-language__slider {
+      background-color: $button;
+      width: 2.2rem;
+      height: 1.5rem;
+      border-radius: 10px;
+      position: absolute;
+      top: 50%;
+      left: 28%;
+      transform: translate(-50%, -50%);
+      z-index: 8998;
+      opacity: 1;
+    }
+  }
+
+  &__title-wrapper {
+    flex: 4;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__close-btn-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: end;
+  }
+}
+
+// menu
+#accessibilityMenu {
+  background-color: $background;
+  //   height: 40rem;
+  width: 480px;
+  position: fixed;
+  bottom: 3rem;
+  right: 3rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  font-family: "Actor", sans-serif;
+  font-size: 16px;
+  color: $text;
+}
+
+.accessibility-main {
+  display: flex;
+  padding: 1rem;
+  // outline: 1px solid blue;
+}
+
+//content adjustment section
+.accessibility-main__content-adjustments {
+  // display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: stretch;
+  align-items: stretch;
+  background-color: $sectionBackground;
+  padding: 1rem;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  // font-size: 16px;
+}
+
+.accessibility-content__header {
+  grid-column: 1 / span 2;
+  display: flex;
+  justify-content: space-between;
+}
+
+// components
+.accessibility-component__up-down-buttons {
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  height: 65px;
+  // flex: 1;
+  // flex-basis: 50%;
+  // width: 100%;
+}
+
+.up-down-buttons__name-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  img {
+    width: 16px;
+  }
+}
+
+.up-down-buttons__buttons-container {
+  background-color: $background;
+  border: none;
+  border-radius: 10px;
+  height: 30px;
+  font-size: 16px;
+  text-align: center;
+  vertical-align: bottom;
+  display: flex;
+  justify-content: space-between;
+}
+
+.up-down-buttons__plus-btn-wrapper {
+  background-color: $white;
+  width: 30px;
+  height: 20px;
+  margin: 4px 8px;
+  border-radius: 10px;
+  position: relative;
+
+  button {
+    background: none;
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    width: 30px;
+    height: 20px;
+    font-size: 16px;
+    background-color: $button;
+    border: none;
+    color: $white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+
+    &:hover {
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+.up-down-buttons__minus-btn-wrapper {
+  background-color: $white;
+  width: 30px;
+  height: 20px;
+  margin: 4px 8px;
+  border-radius: 10px;
+  position: relative;
+
+  button {
+    background: none;
+    position: absolute;
+    top: -2px;
+    right: 4px;
+    width: 30px;
+    height: 20px;
+    font-size: 16px;
+    background-color: $button;
+    border: none;
+    color: $white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+
+    &:hover {
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+// TOGGLE COMPONENT
+.accessibility-component__toggle-container {
+  background-color: $white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  min-height: 65px;
+  max-height: 65px;
+
+  img {
+    width: 12px;
+    // outline: 1px solid red;
+    margin-right: 5px;
+  }
+
+  .toggle__name-container {
+    display: flex;
+    // outline: 2px solid salmon;
+    line-height: 14px;
+  }
+
+  .toggle__name-wrapper {
+    // outline: 1px solid pink;
+  }
+}
+
+///
+///
+///
+.toggle__btn {
+  position: relative;
+  width: 60px;
+  height: 25px;
+  display: flex;
+  padding: 0.3rem 0.3rem;
+  border-radius: 20px;
+  background-color: $background;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+}
+
+.toggle__btn::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 30px;
+  height: 21px;
+  border-radius: 15px;
+  background-color: $offTogledBtn;
+  // background-color: red;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.24);
+  transition: 0.2s;
+}
+
+.toggle__btn.on {
+  background-color: $background;
+}
+
+.toggle__btn.on::before {
+  transform: translateX(65%);
+  background-color: $button;
+}

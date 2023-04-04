@@ -1,3 +1,13 @@
+import fontSizeSVG from "./assets/font-size.svg";
+import contentScaleSVG from "./assets/content-scale.svg";
+import letterSpacingSVG from "./assets/letter-spacing.svg";
+import lineHeightSVG from "./assets/line-height.svg";
+import underlinedTitlesSVG from "./assets/underlined-titles.svg";
+import underlinedLinksSVG from "./assets/underlined-links.svg";
+
+import contrastSVG from "./assets/contrast.svg";
+import saturationSVG from "./assets/saturation.svg";
+
 class Accessibility {
   contentAdjustments = {
     fontSizing: {
@@ -193,6 +203,187 @@ class Accessibility {
         body.style.filter = `saturate(${this.state.curSaturation}%)`;
       },
     },
+  };
+  helpers = {
+    flashlight: {
+      state: {
+        isOn: false,
+      },
+      on() {},
+      off() {},
+    },
+  };
+  activate() {
+    this.#createDOM();
+  }
+  #createDOM() {
+    //main button
+    const div = document.createElement("div");
+    div.setAttribute("id", "accessibilityBtnWrapper");
+
+    const button = document.createElement("button");
+    button.setAttribute("id", "accessibilityBtn");
+
+    const img = document.createElement("img");
+    img.setAttribute("id", "accessibilityBtnIcon");
+    img.setAttribute("src", "./assets/ion_accessibility.svg");
+    img.setAttribute("alt", "accessibility button");
+
+    button.appendChild(img);
+    div.appendChild(button);
+    document.body.appendChild(div);
+
+    //menu
+
+    //append components
+    const divContentSizeContainer = document.querySelector(
+      ".accessibility-content-size__wrapper"
+    );
+    const divFontSizeContainer = document.querySelector(
+      ".accessibility-font-size__wrapper"
+    );
+    const underlinedTitlesWrapper = document.querySelector(
+      ".accessibility-underlined-titles__wrapper"
+    );
+    const underlinedLinksWrapper = document.querySelector(
+      ".accessibility-underlined-links__wrapper"
+    );
+    const lineHeightWrapper = document.querySelector(
+      ".accessibility-line-height__wrapper"
+    );
+    const letterSpacingWrapper = document.querySelector(
+      ".accessibility-letter-spacing__wrapper"
+    );
+    //
+    const componentContentSize = this.#createUpDownComponent(
+      "MARIME CONTINUT",
+      contentScaleSVG
+    );
+
+    const divComponentFontSizeContainer = this.#createUpDownComponent(
+      "MARIME FONT",
+      fontSizeSVG
+    );
+
+    const componentUnderlinedTitles = this.#createToggleComponent(
+      "TITLURI SUBLINIATE",
+      underlinedTitlesSVG
+    );
+
+    const componentUnderlinedLinks = this.#createToggleComponent(
+      "LINKURI SUBLINIATE",
+      underlinedLinksSVG
+    );
+
+    const componentLineHeight = this.#createUpDownComponent(
+      "SPATIERE RANDURI",
+      lineHeightSVG
+    );
+
+    const componentLetterSpacing = this.#createUpDownComponent(
+      "SPATIERE LITERE",
+      letterSpacingSVG
+    );
+
+    divFontSizeContainer.appendChild(divComponentFontSizeContainer);
+    divContentSizeContainer.appendChild(componentContentSize);
+    lineHeightWrapper.appendChild(componentLineHeight);
+    letterSpacingWrapper.appendChild(componentLetterSpacing);
+
+    underlinedTitlesWrapper.appendChild(componentUnderlinedTitles);
+    underlinedLinksWrapper.appendChild(componentUnderlinedLinks);
+  }
+
+  #createUpDownComponent(name, iconSrc) {
+    const divComponentContainer = document.createElement("div");
+    const divNameContainer = document.createElement("div");
+    const img = document.createElement("img");
+    const span = document.createElement("span");
+    const divButtonsContainer = document.createElement("div");
+    const divPlusBtnWrapper = document.createElement("div");
+    const buttonPlus = document.createElement("button");
+    const spanPlus = document.createElement("span");
+    const spanPercentage = document.createElement("span");
+    const divMinusBtnWrapper = document.createElement("div");
+    const buttonMinus = document.createElement("button");
+    const spanMinus = document.createElement("span");
+
+    // set the attributes and content for the elements
+    divComponentContainer.setAttribute(
+      "class",
+      "accessibility-component__up-down-buttons"
+    );
+    divNameContainer.setAttribute("class", "up-down-buttons__name-container");
+    img.setAttribute("class", "up-down-buttons__img");
+    img.setAttribute("src", iconSrc);
+    span.innerText = name;
+    divButtonsContainer.setAttribute(
+      "class",
+      "up-down-buttons__buttons-container"
+    );
+    divPlusBtnWrapper.setAttribute(
+      "class",
+      "up-down-buttons__plus-btn-wrapper"
+    );
+    buttonPlus.appendChild(spanPlus);
+    spanPlus.innerText = "+";
+    spanPercentage.innerText = "+10%";
+    divMinusBtnWrapper.setAttribute(
+      "class",
+      "up-down-buttons__minus-btn-wrapper"
+    );
+    buttonMinus.appendChild(spanMinus);
+    spanMinus.innerText = "-";
+
+    // append the elements to the correct parent elements
+    divComponentContainer.appendChild(divNameContainer);
+    divNameContainer.appendChild(img);
+    divNameContainer.appendChild(span);
+    divComponentContainer.appendChild(divButtonsContainer);
+    divButtonsContainer.appendChild(divPlusBtnWrapper);
+    divPlusBtnWrapper.appendChild(buttonPlus);
+    divButtonsContainer.appendChild(spanPercentage);
+    divButtonsContainer.appendChild(divMinusBtnWrapper);
+    divMinusBtnWrapper.appendChild(buttonMinus);
+
+    return divComponentContainer;
+  }
+
+  #createToggleComponent(name, iconSrc) {
+    // Create the main container
+    const toggleContainer = document.createElement("div");
+    const nameContainer = document.createElement("div");
+    const image = document.createElement("img");
+    const nameWrapper = document.createElement("div");
+    const nameSpan = document.createElement("span");
+    const btnWrapper = document.createElement("div");
+    const btn = document.createElement("button");
+
+    image.src = iconSrc;
+    image.alt = "";
+    const [nameTop, nameBottom] = name.split(" ");
+    nameSpan.innerHTML = `${nameTop} <br /> ${nameBottom}`;
+
+    toggleContainer.classList.add("accessibility-component__toggle-container");
+    nameContainer.classList.add("toggle__name-container");
+    nameWrapper.classList.add("toggle__name-wrapper");
+    btnWrapper.classList.add("toggle__btn-wrapper");
+    btn.classList.add("toggle__btn");
+
+    nameWrapper.appendChild(image);
+    nameWrapper.appendChild(nameSpan);
+    nameContainer.appendChild(image);
+    nameContainer.appendChild(nameWrapper);
+    btnWrapper.appendChild(btn);
+    toggleContainer.appendChild(nameContainer);
+    toggleContainer.appendChild(btnWrapper);
+
+    return toggleContainer;
+    // document.body.appendChild(toggleContainer);
+  }
+
+  createStyle = {
+    mainBtn(bgColor) {},
   };
 }
 
