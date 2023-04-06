@@ -7,14 +7,31 @@ import underlinedLinksSVG from "./assets/underlined-links.svg";
 
 import contrastSVG from "./assets/contrast.svg";
 import saturationSVG from "./assets/saturation.svg";
+import "./style/main.scss";
 
 class Accessibility {
-  contentAdjustments = {
-    fontSizing: {
-      state: {
-        textSize: 1,
-      },
+  constructor() {
+    this.#bindObjects();
+  }
 
+  init() {
+    this.#createDOM();
+    this.#controller();
+  }
+
+  contentAdjustments = {
+    state: {
+      contentScale: 1,
+      fontSize: 1,
+      lineHeight: 1,
+      letterSpacing: 0, //px
+      isHighlightTitles: false,
+      isHighlightLinks: false,
+    },
+    contentScaling: {
+      //tba
+    },
+    fontSizing: {
       increase() {
         this._resizeFont("increase");
       },
@@ -23,14 +40,20 @@ class Accessibility {
         this._resizeFont("decrease");
       },
 
+      // bind to contentAdjustments
       _resizeFont(direction) {
         const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
-        if (direction === "increase") {
-          this.state.textSize += 0.05;
+        //
+        if (direction === "increase" && this.state.fontSize < 2.95) {
+          this.state.fontSize += 0.05;
+          this._util.percentageRender("spanPercentageMarimeFont", "fontSize");
         }
-        if (direction === "decrease") {
-          this.state.textSize -= 0.05;
+        //
+        if (direction === "decrease" && this.state.fontSize > 0.1) {
+          this.state.fontSize -= 0.05;
+          this._util.percentageRender("spanPercentageMarimeFont", "fontSize");
         }
+        //
         texts.forEach((text) => {
           const elStyles = window.getComputedStyle(text);
           const elFontSize = elStyles.getPropertyValue("font-size");
@@ -40,16 +63,13 @@ class Accessibility {
             text.dataset.initialFontSize = size;
           }
 
-          const newSize = text.dataset.initialFontSize * this.state.textSize;
+          const newSize = text.dataset.initialFontSize * this.state.fontSize;
 
           text.style.fontSize = Math.floor(newSize) + "px";
         });
       },
     },
     lineHeight: {
-      state: {
-        lineHeight: 1,
-      },
       increase() {
         this._resizeLineHeight("increase");
       },
@@ -62,9 +82,17 @@ class Accessibility {
         const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
         if (direction === "increase") {
           this.state.lineHeight += 0.1;
+          this._util.percentageRender(
+            "spanPercentageSpatiereRanduri",
+            "lineHeight"
+          );
         }
         if (direction === "decrease") {
           this.state.lineHeight -= 0.1;
+          this._util.percentageRender(
+            "spanPercentageSpatiereRanduri",
+            "lineHeight"
+          );
         }
         texts.forEach((text) => {
           const elStyles = window.getComputedStyle(text);
@@ -87,13 +115,23 @@ class Accessibility {
     },
     letterSpacing: {
       increase() {
-        this._resizeLetterSpacing("increase");
+        // this bind to contentAdjustments
+        ++this.state.letterSpacing;
+        this.letterSpacing._resizeLetterSpacing("increase");
+        this._util.pxRender(
+          "spanPercentageSpatiereLitere",
+          this.state.letterSpacing
+        );
       },
-
       decrease() {
-        this._resizeLetterSpacing("decrease");
+        // this bind to contentAdjustments
+        --this.state.letterSpacing;
+        this.letterSpacing._resizeLetterSpacing("decrease");
+        this._util.pxRender(
+          "spanPercentageSpatiereLitere",
+          this.state.letterSpacing
+        );
       },
-
       _resizeLetterSpacing(direction) {
         const texts = document.querySelectorAll("p, h1, h2,h3");
         texts.forEach((text) => {
@@ -106,7 +144,6 @@ class Accessibility {
           if (!text.dataset.initialLetterSpacing) {
             text.dataset.initialLetterSpacing = letterSpacing;
           }
-
           if (direction === "increase") {
             text.style.letterSpacing = ++letterSpacing + "px";
           }
@@ -117,10 +154,9 @@ class Accessibility {
       },
     },
     highlightTitles: {
-      state: {
-        isOn: false,
-      },
       on() {
+        this.state.isHighlightTitles = true;
+        this._util.toggleRender("btnTitluriSubliniate", true);
         const headers = document.querySelectorAll("h1, h2, h3, h4, h5 ,h6");
         headers.forEach((header) => {
           const styles = window.getComputedStyle(header);
@@ -131,24 +167,21 @@ class Accessibility {
           }
 
           header.style.outline = "2px solid #a81a2d";
-
-          this.state.isOn = true;
         });
       },
       off() {
+        this.state.isHighlightTitles = false;
+        this._util.toggleRender("btnTitluriSubliniate", false);
         const headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
         headers.forEach((header) => {
-          console.log(header.dataset.initialOutline);
           header.style.outline = header.dataset.initialOutline;
-          this.state.isOn = false;
         });
       },
     },
     highlightLinks: {
-      state: {
-        isOn: false,
-      },
       on() {
+        this.state.isHighlightLinks = true;
+        this._util.toggleRender("btnLinkuriSubliniate", true);
         const anchors = document.querySelectorAll("a");
         anchors.forEach((anchor) => {
           const styles = window.getComputedStyle(anchor);
@@ -159,16 +192,31 @@ class Accessibility {
           }
 
           anchor.style.outline = "2px solid #1744c0";
-
-          this.state.isOn = true;
         });
       },
       off() {
+        this.state.isHighlightLinks = false;
+        this._util.toggleRender("btnLinkuriSubliniate", false);
         const anchors = document.querySelectorAll("a");
         anchors.forEach((anchor) => {
           anchor.style.outline = anchor.dataset.initialOutline;
-          this.state.isOn = false;
         });
+      },
+    },
+    _util: {
+      percentageRender: (elId, state) => {
+        const percentageEl = document.getElementById(elId);
+        percentageEl.innerText =
+          Math.round(this.contentAdjustments.state[state] * 100) + "%";
+      },
+      pxRender: (elId, state) => {
+        const pxEl = document.getElementById(elId);
+        pxEl.innerText = state + " px";
+      },
+      toggleRender: (elId, state) => {
+        const toggleBtnEl = document.getElementById(elId);
+        if (state) toggleBtnEl.classList.add("on");
+        else toggleBtnEl.classList.remove("on");
       },
     },
   };
@@ -204,7 +252,8 @@ class Accessibility {
       },
     },
   };
-  helpers = {
+
+  tools = {
     flashlight: {
       state: {
         isOn: false,
@@ -213,9 +262,9 @@ class Accessibility {
       off() {},
     },
   };
-  activate() {
-    this.#createDOM();
-  }
+
+  setLanguage() {}
+
   #createDOM() {
     //main button
     const div = document.createElement("div");
@@ -260,9 +309,10 @@ class Accessibility {
       contentScaleSVG
     );
 
-    const divComponentFontSizeContainer = this.#createUpDownComponent(
+    const componentFontSizeContainer = this.#createUpDownComponent(
       "MARIME FONT",
-      fontSizeSVG
+      fontSizeSVG,
+      this.contentAdjustments.state.fontSize * 100 + "%"
     );
 
     const componentUnderlinedTitles = this.#createToggleComponent(
@@ -277,15 +327,17 @@ class Accessibility {
 
     const componentLineHeight = this.#createUpDownComponent(
       "SPATIERE RANDURI",
-      lineHeightSVG
+      lineHeightSVG,
+      this.contentAdjustments.state.lineHeight * 100 + "%"
     );
 
     const componentLetterSpacing = this.#createUpDownComponent(
       "SPATIERE LITERE",
-      letterSpacingSVG
+      letterSpacingSVG,
+      "0 px"
     );
 
-    divFontSizeContainer.appendChild(divComponentFontSizeContainer);
+    divFontSizeContainer.appendChild(componentFontSizeContainer);
     divContentSizeContainer.appendChild(componentContentSize);
     lineHeightWrapper.appendChild(componentLineHeight);
     letterSpacingWrapper.appendChild(componentLetterSpacing);
@@ -315,11 +367,11 @@ class Accessibility {
     accessibilitySaturationWrapper.appendChild(componentSaturation);
   }
 
-  #createUpDownComponent(name, iconSrc) {
-    const divComponentContainer = document.createElement("div");
+  #createUpDownComponent(name, iconSrc, percentage = "+10%") {
+    const componentContainer = document.createElement("div");
     const divNameContainer = document.createElement("div");
     const img = document.createElement("img");
-    const span = document.createElement("span");
+    const spanName = document.createElement("span");
     const divButtonsContainer = document.createElement("div");
     const divPlusBtnWrapper = document.createElement("div");
     const buttonPlus = document.createElement("button");
@@ -329,15 +381,25 @@ class Accessibility {
     const buttonMinus = document.createElement("button");
     const spanMinus = document.createElement("span");
 
-    // set the attributes and content for the elements
-    divComponentContainer.setAttribute(
+    componentContainer.setAttribute(
       "class",
       "accessibility-component__up-down-buttons"
     );
     divNameContainer.setAttribute("class", "up-down-buttons__name-container");
     img.setAttribute("class", "up-down-buttons__img");
     img.setAttribute("src", iconSrc);
-    span.innerText = name;
+    buttonPlus.setAttribute(
+      "id",
+      `plusBtn${this.#helpersFunc.formatName(name)}`
+    );
+    buttonMinus.setAttribute(
+      "id",
+      `minusBtn${this.#helpersFunc.formatName(name)}`
+    );
+    spanPercentage.setAttribute(
+      "id",
+      `spanPercentage${this.#helpersFunc.formatName(name)}`
+    );
     divButtonsContainer.setAttribute(
       "class",
       "up-down-buttons__buttons-container"
@@ -346,28 +408,29 @@ class Accessibility {
       "class",
       "up-down-buttons__plus-btn-wrapper"
     );
-    buttonPlus.appendChild(spanPlus);
-    spanPlus.innerText = "+";
-    spanPercentage.innerText = "+10%";
     divMinusBtnWrapper.setAttribute(
       "class",
       "up-down-buttons__minus-btn-wrapper"
     );
-    buttonMinus.appendChild(spanMinus);
+
+    spanName.innerText = name;
+    spanPlus.innerText = "+";
+    spanPercentage.innerText = percentage;
     spanMinus.innerText = "-";
 
-    // append the elements to the correct parent elements
-    divComponentContainer.appendChild(divNameContainer);
+    buttonPlus.appendChild(spanPlus);
+    buttonMinus.appendChild(spanMinus);
+    componentContainer.appendChild(divNameContainer);
     divNameContainer.appendChild(img);
-    divNameContainer.appendChild(span);
-    divComponentContainer.appendChild(divButtonsContainer);
+    divNameContainer.appendChild(spanName);
+    componentContainer.appendChild(divButtonsContainer);
     divButtonsContainer.appendChild(divPlusBtnWrapper);
     divPlusBtnWrapper.appendChild(buttonPlus);
     divButtonsContainer.appendChild(spanPercentage);
     divButtonsContainer.appendChild(divMinusBtnWrapper);
     divMinusBtnWrapper.appendChild(buttonMinus);
 
-    return divComponentContainer;
+    return componentContainer;
   }
 
   #createToggleComponent(name, iconSrc) {
@@ -390,6 +453,7 @@ class Accessibility {
     nameWrapper.classList.add("toggle__name-wrapper");
     btnWrapper.classList.add("toggle__btn-wrapper");
     btn.classList.add("toggle__btn");
+    btn.id = "btn" + this.#helpersFunc.formatName(name);
 
     nameWrapper.appendChild(image);
     nameWrapper.appendChild(nameSpan);
@@ -429,6 +493,142 @@ class Accessibility {
     mainContainer.appendChild(contrastWrapper);
     mainContainer.appendChild(saturationWrapper);
   }
+
+  #controller() {
+    const accessibilityMenu = document.getElementById("accessibilityMenu");
+
+    accessibilityMenu.addEventListener("click", (e) => {
+      const clickedId = e.target.id;
+
+      // CONTENT SCALE
+      if (clickedId === "plusBtnMarimeContinut")
+        this.contentAdjustments.contentScaling.increase();
+
+      // FONT SIZE
+      if (clickedId === "plusBtnMarimeFont")
+        this.contentAdjustments.fontSizing.increase();
+      if (clickedId === "minusBtnMarimeFont")
+        this.contentAdjustments.fontSizing.decrease();
+
+      // LINE HEIGHT SPACING
+      if (clickedId === "plusBtnSpatiereRanduri")
+        this.contentAdjustments.lineHeight.increase();
+      if (clickedId === "minusBtnSpatiereRanduri")
+        this.contentAdjustments.lineHeight.decrease();
+
+      // LETTER SPACING
+      if (clickedId === "plusBtnSpatiereLitere")
+        this.contentAdjustments.letterSpacing.increase();
+      if (clickedId === "minusBtnSpatiereLitere")
+        this.contentAdjustments.letterSpacing.decrease();
+
+      // HIGHLIGHT TITLES
+      if (clickedId === "btnTitluriSubliniate") {
+        if (!this.contentAdjustments.state.isHighlightTitles) {
+          this.contentAdjustments.highlightTitles.on();
+        } else {
+          this.contentAdjustments.highlightTitles.off();
+        }
+      }
+
+      // HIGHLIGHT LINKS
+      if (clickedId === "btnLinkuriSubliniate") {
+        if (!this.contentAdjustments.state.isHighlightLinks) {
+          this.contentAdjustments.highlightLinks.on();
+        } else {
+          this.contentAdjustments.highlightLinks.off();
+        }
+      }
+    });
+
+    const plusContrast = document.getElementById("plusContrast");
+    const minusContrast = document.getElementById("minusContrast");
+
+    const plusSaturation = document.getElementById("plusSaturation");
+    const minusSaturation = document.getElementById("minusSaturation");
+
+    plusContrast.addEventListener("click", () => {
+      this.colorAdjustments.contrast.increase();
+    });
+
+    minusContrast.addEventListener("click", () => {
+      this.colorAdjustments.contrast.decrease();
+    });
+
+    plusSaturation.addEventListener("click", () => {
+      this.colorAdjustments.saturation.increase();
+    });
+
+    minusSaturation.addEventListener("click", () => {
+      this.colorAdjustments.saturation.decrease();
+    });
+  }
+
+  #bindObjects() {
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.fontSizing,
+      "_resizeFont",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.lineHeight,
+      "_resizeLineHeight",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.letterSpacing,
+      "increase",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.letterSpacing,
+      "decrease",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.highlightTitles,
+      "on",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.highlightTitles,
+      "off",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.highlightLinks,
+      "on",
+      this.contentAdjustments
+    );
+    this.#helpersFunc.bindObj(
+      this.contentAdjustments.highlightLinks,
+      "off",
+      this.contentAdjustments
+    );
+  }
+
+  #helpersFunc = {
+    formatName(name) {
+      const words = name
+        .trim()
+        .split(/\s+/)
+        .map((word) => word.toLowerCase());
+
+      const formattedName = words
+        .map((word, index) => {
+          if (index < 2) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          }
+          return word;
+        })
+        .join("");
+
+      return formattedName;
+    },
+    bindObj(targetObj, methodName, objToBind) {
+      targetObj[methodName] = targetObj[methodName].bind(objToBind);
+    },
+  };
 }
 
 export default new Accessibility();
