@@ -9,18 +9,22 @@ $white: #fff;
 $sectionBackground: #eaf1fc;
 
 #accessibilityBtn {
-  width: 30px;
-  height: 3px;
+  width: 50px;
+  height: 50px;
   background-color: $mainBtnBackground;
   position: fixed;
-  right: 3px;
-  bottom: 3px;
+  right: 30px;
+  bottom: 30px;
   border-radius: 50%;
   border: none;
+  padding: 0.5rem;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
 }
 
 #accessibilityBtnIcon {
-  width: 21px;
+  width: 30px;
+  // outline: 2px solid red;
+  // position: fixed;
   transform: translateY(0.1rem);
 }
 
@@ -46,17 +50,27 @@ $sectionBackground: #eaf1fc;
       z-index: 8999;
     }
 
+    &:hover {
+      cursor: pointer;
+    }
+
     .accessibility-language__slider {
       background-color: $button;
-      width: 2.2rem;
+      width: 35px;
       height: 1.5rem;
       border-radius: 10px;
       position: absolute;
       top: 50%;
       left: 28%;
-      transform: translate(-50%, -50%);
       z-index: 8998;
       opacity: 1;
+      transition: 0.3s;
+      &--eng {
+        transform: translate(60%, -50%);
+      }
+      &--ro {
+        transform: translate(-48%, -50%);
+      }
     }
   }
 
@@ -87,8 +101,8 @@ $sectionBackground: #eaf1fc;
   //   height: 40rem;
   // width: 480px;
   position: fixed;
-  bottom: 3rem;
-  right: 3rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -151,15 +165,15 @@ $sectionBackground: #eaf1fc;
 }
 
 .up-down-buttons__buttons-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: $background;
   border: none;
   border-radius: 10px;
-  height: 30px;
+  height: 35px;
   font-size: 16px;
   text-align: center;
-  vertical-align: bottom;
-  display: flex;
-  justify-content: space-between;
 }
 
 .up-down-buttons__plus-btn-wrapper {
@@ -174,7 +188,7 @@ $sectionBackground: #eaf1fc;
     background: none;
     position: absolute;
     top: -2px;
-    right: -4px;
+    right: -2px;
     width: 30px;
     height: 20px;
     font-size: 16px;
@@ -186,6 +200,10 @@ $sectionBackground: #eaf1fc;
     justify-content: center;
     align-items: center;
     transition: 0.2s;
+
+    img {
+      width: 15px;
+    }
 
     &:hover {
       top: 0;
@@ -206,7 +224,7 @@ $sectionBackground: #eaf1fc;
     background: none;
     position: absolute;
     top: -2px;
-    right: 4px;
+    right: 2px;
     width: 30px;
     height: 20px;
     font-size: 16px;
@@ -218,6 +236,10 @@ $sectionBackground: #eaf1fc;
     justify-content: center;
     align-items: center;
     transition: 0.2s;
+
+    img {
+      width: 15px;
+    }
 
     &:hover {
       top: 0;

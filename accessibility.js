@@ -1,3 +1,6 @@
+import plusSVG from "./assets/plus.svg";
+import minusSVG from "./assets/minus.svg";
+
 import fontSizeSVG from "./assets/font-size.svg";
 import contentScaleSVG from "./assets/content-scale.svg";
 import letterSpacingSVG from "./assets/letter-spacing.svg";
@@ -18,7 +21,7 @@ class Accessibility {
 
   init() {
     this.#dom.init();
-    this.#controller();
+    this.#controller.init();
   }
 
   contentAdjustments = {
@@ -27,8 +30,8 @@ class Accessibility {
       fontSize: 1,
       lineHeight: 1,
       letterSpacing: 0, //px
-      isHighlightTitles: false,
-      isHighlightLinks: false,
+      isTitlesHighlight: false,
+      isLinksHighlight: false,
     },
     contentScaling: {
       //tba
@@ -47,17 +50,17 @@ class Accessibility {
         //
         if (direction === "increase" && this.state.fontSize < 2.95) {
           this.state.fontSize += 0.05;
-          this._util.percentageRender("spanPercentageMarimeFont", "fontSize");
+          this._util.percentageRender("spanPercentageFontSizing", "fontSize");
         }
         //
         if (direction === "decrease" && this.state.fontSize > 0.1) {
           this.state.fontSize -= 0.05;
-          this._util.percentageRender("spanPercentageMarimeFont", "fontSize");
+          this._util.percentageRender("spanPercentageFontSizing", "fontSize");
         }
         //
         if (direction === "reset") {
           this.state.fontSize = 1;
-          this._util.percentageRender("spanPercentageMarimeFont", "fontSize");
+          this._util.percentageRender("spanPercentageFontSizing", "fontSize");
         }
         texts.forEach((text) => {
           const elStyles = window.getComputedStyle(text);
@@ -87,25 +90,16 @@ class Accessibility {
         const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
         if (direction === "increase") {
           this.state.lineHeight += 0.1;
-          this._util.percentageRender(
-            "spanPercentageSpatiereRanduri",
-            "lineHeight"
-          );
+          this._util.percentageRender("spanPercentageLineHeight", "lineHeight");
         }
         if (direction === "decrease") {
           this.state.lineHeight -= 0.1;
-          this._util.percentageRender(
-            "spanPercentageSpatiereRanduri",
-            "lineHeight"
-          );
+          this._util.percentageRender("spanPercentageLineHeight", "lineHeight");
         }
 
         if (direction === "reset") {
           this.state.lineHeight = 1;
-          this._util.percentageRender(
-            "spanPercentageSpatiereRanduri",
-            "lineHeight"
-          );
+          this._util.percentageRender("spanPercentageLineHeight", "lineHeight");
         }
 
         texts.forEach((text) => {
@@ -134,7 +128,7 @@ class Accessibility {
         ++this.state.letterSpacing;
         this.letterSpacing._resizeLetterSpacing("increase");
         this._util.pxRender(
-          "spanPercentageSpatiereLitere",
+          "spanPercentageLetterSpacing",
           this.state.letterSpacing
         );
       },
@@ -143,7 +137,7 @@ class Accessibility {
         --this.state.letterSpacing;
         this.letterSpacing._resizeLetterSpacing("decrease");
         this._util.pxRender(
-          "spanPercentageSpatiereLitere",
+          "spanPercentageLetterSpacing",
           this.state.letterSpacing
         );
       },
@@ -153,7 +147,7 @@ class Accessibility {
         this.state.letterSpacing = 0;
         this.letterSpacing._resizeLetterSpacing("reset");
         this._util.pxRender(
-          "spanPercentageSpatiereLitere",
+          "spanPercentageLetterSpacing",
           this.state.letterSpacing
         );
       },
@@ -169,6 +163,7 @@ class Accessibility {
           if (!text.dataset.initialLetterSpacing) {
             text.dataset.initialLetterSpacing = letterSpacing;
           }
+
           if (direction === "increase") {
             text.style.letterSpacing = ++letterSpacing + "px";
           }
@@ -181,10 +176,10 @@ class Accessibility {
         });
       },
     },
-    highlightTitles: {
+    titlesHighlight: {
       on() {
-        this.state.isHighlightTitles = true;
-        this._util.toggleRender("btnTitluriEvidentiate", true);
+        this.state.isTitlesHighlight = true;
+        this._util.toggleRender("btnTitlesHighlight", true);
         const headers = document.querySelectorAll("h1, h2, h3, h4, h5 ,h6");
         headers.forEach((header) => {
           const styles = window.getComputedStyle(header);
@@ -198,18 +193,18 @@ class Accessibility {
         });
       },
       off() {
-        this.state.isHighlightTitles = false;
-        this._util.toggleRender("btnTitluriEvidentiate", false);
+        this.state.isTitlesHighlight = false;
+        this._util.toggleRender("btnTitlesHighlight", false);
         const headers = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
         headers.forEach((header) => {
           header.style.outline = header.dataset.initialOutline;
         });
       },
     },
-    highlightLinks: {
+    linksHighlight: {
       on() {
-        this.state.isHighlightLinks = true;
-        this._util.toggleRender("btnLinkuriEvidentiate", true);
+        this.state.isLinksHighlight = true;
+        this._util.toggleRender("btnLinksHighlight", true);
         const anchors = document.querySelectorAll("a");
         anchors.forEach((anchor) => {
           const styles = window.getComputedStyle(anchor);
@@ -223,8 +218,8 @@ class Accessibility {
         });
       },
       off() {
-        this.state.isHighlightLinks = false;
-        this._util.toggleRender("btnLinkuriEvidentiate", false);
+        this.state.isLinksHighlight = false;
+        this._util.toggleRender("btnLinksHighlight", false);
         const anchors = document.querySelectorAll("a");
         anchors.forEach((anchor) => {
           anchor.style.outline = anchor.dataset.initialOutline;
@@ -235,8 +230,8 @@ class Accessibility {
       this.fontSizing._resizeFont("reset");
       this.lineHeight._resizeLineHeight("reset");
       this.letterSpacing.reset();
-      this.highlightTitles.off();
-      this.highlightLinks.off();
+      this.titlesHighlight.off();
+      this.linksHighlight.off();
     },
     _util: {
       percentageRender: (elId, state) => {
@@ -291,40 +286,40 @@ class Accessibility {
         const body = document.querySelector("body :not(#accessibilityMenu)");
         this.state.saturation += 10;
         body.style.filter = `saturate(${this.state.saturation}%)`;
-        this._util.percentageRender("spanPercentageSaturatie", "saturation");
+        this._util.percentageRender("spanPercentageSaturation", "saturation");
       },
       decrease() {
         if (this.state.saturation <= 10) return;
         const body = document.querySelector("body :not(#accessibilityMenu)");
         this.state.saturation -= 10;
         body.style.filter = `saturate(${this.state.saturation}%)`;
-        this._util.percentageRender("spanPercentageSaturatie", "saturation");
+        this._util.percentageRender("spanPercentageSaturation", "saturation");
       },
       reset() {
         this.state.saturation = 100;
         const body = document.querySelector("body");
         body.style.filter = `saturation(${this.state.saturation}%)`;
-        this._util.percentageRender("spanPercentageSaturatie", "saturation");
+        this._util.percentageRender("spanPercentageSaturation", "saturation");
       },
     },
     invert: {
       on() {
         const body = document.querySelectorAll(
-          "* :not(img):not(#accessibilityMenu *)"
+          "body * :not(img):not(#accessibilityMenu *)"
         );
         body.forEach((el) => {
           el.style.filter = `invert(100%)`;
         });
         this.state.isInvert = true;
-        this._util.toggleRender("btnInverseazaCulori", true);
+        this._util.toggleRender("btnColorsInversed", true);
       },
       off() {
-        const body = document.querySelectorAll("* :not(img)");
+        const body = document.querySelectorAll("body * :not(img)");
         body.forEach((el) => {
           el.style.filter = `invert(0%)`;
         });
+        this._util.toggleRender("btnColorsInversed", false);
         this.state.isInvert = false;
-        this._util.toggleRender("btnInverseazaCulori", false);
       },
     },
     backgroundWhite: {
@@ -348,7 +343,7 @@ class Accessibility {
           el.style.color = "black";
           el.style.backgroundColor = "white";
         });
-        this._util.toggleRender("btnFundalAlb", true);
+        this._util.toggleRender("btnWhiteBackground", true);
         this.state.isBackgroundWhite = true;
       },
 
@@ -362,7 +357,7 @@ class Accessibility {
           elem.style.backgroundColor = elem.dataset.initialBackgroundColor;
         });
 
-        this._util.toggleRender("btnFundalAlb", false);
+        this._util.toggleRender("btnWhiteBackground", false);
         this.state.isBackgroundWhite = false;
       },
     },
@@ -370,8 +365,8 @@ class Accessibility {
     reset() {
       this.contrast.reset();
       this.saturation.reset();
-      this.invert.off();
-      this.backgroundWhite.off();
+      // this.invert.off();
+      // this.backgroundWhite.off();
     },
 
     _util: {
@@ -399,14 +394,17 @@ class Accessibility {
     },
   };
 
-  setLanguage() {}
-
   #dom = {
+    state: {
+      lang: "ro",
+    },
+
     init() {
       this.menuMainBtn();
       this.header();
       this.createContentSubmenu();
       this.createColorSubmenu();
+      this._util.setLang();
     },
 
     menuMainBtn() {
@@ -429,11 +427,13 @@ class Accessibility {
     header() {
       const accessibilityHeader = document.createElement("div");
       accessibilityHeader.classList.add("accessibility-header");
+      accessibilityHeader.id = "accessibilityHeader";
 
       const languageContainer = document.createElement("div");
       languageContainer.classList.add(
         "accessibility-header__language-container"
       );
+      languageContainer.id = "accessibilityLanguageContainer";
 
       const romanianImg = document.createElement("img");
       romanianImg.src = "./assets/romanian.png";
@@ -444,7 +444,11 @@ class Accessibility {
       englishImg.alt = "english language";
 
       const languageSlider = document.createElement("span");
-      languageSlider.classList.add("accessibility-language__slider");
+      languageSlider.setAttribute(
+        "class",
+        `accessibility-language__slider accessibility-language__slider--${this.state.lang}`
+      );
+      languageSlider.id = "accessibilityLangSlider";
 
       languageContainer.appendChild(romanianImg);
       languageContainer.appendChild(englishImg);
@@ -455,6 +459,7 @@ class Accessibility {
 
       const title = document.createElement("span");
       title.classList.add("accessibility-header__title");
+      title.id = "accessibilityTitle";
       title.textContent = "SETARI ACCESSIBILITATE";
 
       titleWrapper.appendChild(title);
@@ -464,11 +469,13 @@ class Accessibility {
 
       const closeBtn = document.createElement("button");
       closeBtn.classList.add("close-btn");
+      closeBtn.id = "accessibilityCloseBtn";
 
       const closeBtnImg = document.createElement("img");
       closeBtnImg.classList.add("close-btn-img");
       closeBtnImg.src = "./assets/close.svg";
-      closeBtnImg.alt = "";
+      closeBtnImg.alt = "accessibility button image";
+      closeBtnImg.id = "accessbilityCloseBtnImg";
 
       closeBtn.appendChild(closeBtnImg);
 
@@ -490,6 +497,7 @@ class Accessibility {
       contentHeader.classList.add("accessibility-content__header");
 
       const span = document.createElement("span");
+      span.id = "spanNameContentAdjusting";
       span.textContent = "SETARI DE ADJUSTARE CONTINUT";
 
       const contentResetBtn = document.createElement("div");
@@ -502,7 +510,7 @@ class Accessibility {
       const resetBtnImg = document.createElement("img");
       resetBtnImg.classList.add("reset-btn-img");
       resetBtnImg.setAttribute("src", "./assets/reset.svg");
-      resetBtnImg.setAttribute("alt", "");
+      resetBtnImg.setAttribute("alt", "reset content button");
       resetBtnImg.id = "contentResetBtnImg";
 
       resetBtn.appendChild(resetBtnImg);
@@ -544,34 +552,34 @@ class Accessibility {
       contentMenu.appendChild(highlightLinksWrapper);
 
       const componentContentSize = this.createUpDownComponent(
-        "MARIME CONTINUT",
+        "CONTENT SCALING",
         contentScaleSVG
       );
 
       const componentFontSizeContainer = this.createUpDownComponent(
-        "MARIME FONT",
+        "FONT SIZING",
         fontSizeSVG,
         100 + " %"
       );
 
       const componentHighlightTitles = this.createToggleComponent(
-        "TITLURI EVIDENTIATE",
+        "TITLES HIGHLIGHT",
         underlinedTitlesSVG
       );
 
       const componentHighlightLinks = this.createToggleComponent(
-        "LINKURI EVIDENTIATE",
+        "LINKS HIGHLIGHT",
         underlinedLinksSVG
       );
 
       const componentLineHeight = this.createUpDownComponent(
-        "SPATIERE RANDURI",
+        "LINE HEIGHT",
         lineHeightSVG,
         100 + " %"
       );
 
       const componentLetterSpacing = this.createUpDownComponent(
-        "SPATIERE LITERE",
+        "LETTER SPACING",
         letterSpacingSVG,
         "0 px"
       );
@@ -590,7 +598,7 @@ class Accessibility {
     createColorSubmenu() {
       const colorContainer = document.createElement("div");
       const headerContainer = document.createElement("div");
-      const headerTextSpan = document.createElement("span");
+      const spanNameColorAdjustments = document.createElement("span");
       const resetBtnWrapper = document.createElement("div");
       const resetBtn = document.createElement("button");
       const contrastWrapper = document.createElement("div");
@@ -610,8 +618,11 @@ class Accessibility {
         "accessibility-background-white__wrapper"
       );
 
-      headerTextSpan.textContent = "SETARI DE ADJUSTARE CULOARE";
+      spanNameColorAdjustments.id = `spanNameColorAdjustments`;
+
+      spanNameColorAdjustments.textContent = "SETARI DE ADJUSTARE CULOARE";
       resetBtn.classList.add("reset-btn");
+      resetBtn.id = "accessibilityColorResetBtn";
 
       const resetBtnImg = document.createElement("img");
       resetBtnImg.classList.add("reset-btn-img");
@@ -621,7 +632,7 @@ class Accessibility {
 
       resetBtn.appendChild(resetBtnImg);
 
-      headerContainer.appendChild(headerTextSpan);
+      headerContainer.appendChild(spanNameColorAdjustments);
       resetBtnWrapper.appendChild(resetBtn);
       headerContainer.appendChild(resetBtnWrapper);
       colorContainer.appendChild(headerContainer);
@@ -636,16 +647,16 @@ class Accessibility {
       );
 
       const componentSaturation = this.createUpDownComponent(
-        "SATURATIE",
+        "SATURATION",
         saturationSVG
       );
 
       const componentInvert = this.createToggleComponent(
-        "INVERSEAZA CULORI",
+        "COLORS INVERSED",
         invertSVG
       );
       const componentBackgroundWhite = this.createToggleComponent(
-        "FUNDAL ALB",
+        "WHITE BACKGROUND",
         invertSVG
       );
 
@@ -668,11 +679,11 @@ class Accessibility {
       const divButtonsContainer = document.createElement("div");
       const divPlusBtnWrapper = document.createElement("div");
       const buttonPlus = document.createElement("button");
-      const spanPlus = document.createElement("span");
+      const imgPlus = document.createElement("img");
       const spanPercentage = document.createElement("span");
       const divMinusBtnWrapper = document.createElement("div");
       const buttonMinus = document.createElement("button");
-      const spanMinus = document.createElement("span");
+      const imgMinus = document.createElement("img");
 
       componentContainer.setAttribute(
         "class",
@@ -681,12 +692,19 @@ class Accessibility {
       divNameContainer.setAttribute("class", "up-down-buttons__name-container");
       img.setAttribute("class", "up-down-buttons__img");
       img.setAttribute("src", iconSrc);
+
+      spanName.setAttribute("id", `spanName${this._util.formatName(name)}`);
       buttonPlus.setAttribute("id", `plusBtn${this._util.formatName(name)}`);
+      imgPlus.setAttribute("class", "up-down-buttons__plus-btn-img");
+      imgPlus.setAttribute("id", `plusBtnImg${this._util.formatName(name)}`);
+      imgMinus.setAttribute("class", "up-down-buttons__minus-btn-img");
+      imgMinus.setAttribute("id", `minusBtnImg${this._util.formatName(name)}`);
       buttonMinus.setAttribute("id", `minusBtn${this._util.formatName(name)}`);
       spanPercentage.setAttribute(
         "id",
         `spanPercentage${this._util.formatName(name)}`
       );
+
       divButtonsContainer.setAttribute(
         "class",
         "up-down-buttons__buttons-container"
@@ -701,12 +719,13 @@ class Accessibility {
       );
 
       spanName.innerText = name;
-      spanPlus.innerText = "+";
+      imgPlus.src = plusSVG;
+      imgMinus.src = minusSVG;
       spanPercentage.innerText = percentage;
-      spanMinus.innerText = "-";
+      // spanMinus.innerText = "-";
 
-      buttonPlus.appendChild(spanPlus);
-      buttonMinus.appendChild(spanMinus);
+      buttonPlus.appendChild(imgPlus);
+      buttonMinus.appendChild(imgMinus);
       componentContainer.appendChild(divNameContainer);
       divNameContainer.appendChild(img);
       divNameContainer.appendChild(spanName);
@@ -742,6 +761,7 @@ class Accessibility {
       nameWrapper.classList.add("toggle__name-wrapper");
       btnWrapper.classList.add("toggle__btn-wrapper");
       btn.classList.add("toggle__btn");
+      nameSpan.id = `spanName${this._util.formatName(name)}`;
       btn.id = "btn" + this._util.formatName(name);
 
       nameWrapper.appendChild(image);
@@ -774,191 +794,222 @@ class Accessibility {
 
         return formattedName;
       },
+      setLang(lang = this.state.lang) {
+        const accessibilityTitle =
+          document.getElementById("accessibilityTitle");
+        const spanNameContentAdjusting = document.getElementById(
+          "spanNameContentAdjusting"
+        );
+        const spanNameContentScaling = document.getElementById(
+          "spanNameContentScaling"
+        );
+        const spanNameFontSizing =
+          document.getElementById("spanNameFontSizing");
+        const spanNameLineHeight =
+          document.getElementById("spanNameLineHeight");
+        const spanNameLetterSpacing = document.getElementById(
+          "spanNameLetterSpacing"
+        );
+        const spanNameTitlesHighlight = document.getElementById(
+          "spanNameTitlesHighlight"
+        );
+        const spanNameLinksHighlight = document.getElementById(
+          "spanNameLinksHighlight"
+        );
+        const accessibilityLangSlider = document.getElementById(
+          "accessibilityLangSlider"
+        );
+
+        // colors
+        const spanNameColorAdjustments = document.getElementById(
+          "spanNameColorAdjustments"
+        );
+        const spanNameContrast = document.getElementById("spanNameContrast");
+        const spanNameSaturation =
+          document.getElementById("spanNameSaturation");
+        const spanNameColorsInversed = document.getElementById(
+          "spanNameColorsInversed"
+        );
+        const spanNameWhiteBackground = document.getElementById(
+          "spanNameWhiteBackground"
+        );
+        //
+        if (lang === "ro") {
+          this.state.lang = "ro";
+
+          accessibilityTitle.innerText = "SETARI ACCESIBILITATE";
+          spanNameContentAdjusting.innerText = "ADJUSTARE CONTINUT";
+          //content submenu
+          spanNameContentScaling.innerText = "SCALARE CONTINUT";
+          spanNameFontSizing.innerText = "MARIME FONT";
+          spanNameLineHeight.innerText = "SPATIERE RANDURI";
+          spanNameLetterSpacing.innerText = "SPATIERE LITERE";
+          spanNameTitlesHighlight.innerText = "TITLURI EVIDENTIATE";
+          spanNameLinksHighlight.innerText = "LINKURI EVIDENTIATE";
+
+          //colors submenu
+          spanNameColorAdjustments.innerText = "ADJUSTARE CULORI";
+          spanNameContrast.innerText = "CONTRAST";
+          spanNameSaturation.innerText = "SATURATIE";
+          spanNameColorsInversed.innerText = "INVERSARE CULORI";
+          spanNameWhiteBackground.innerText = "FUNDAL ALB";
+
+          accessibilityLangSlider.classList.remove(
+            "accessibility-language__slider--eng"
+          );
+          accessibilityLangSlider.classList.add(
+            "accessibility-language__slider--ro"
+          );
+        }
+
+        if (lang === "eng") {
+          this.state.lang = "eng";
+
+          accessibilityTitle.innerText = "ACCESSIBILITY SETTINGS";
+          spanNameContentAdjusting.innerText = "CONTENT ADJUSTING";
+          //content submenu
+          spanNameContentScaling.innerText = "CONTENT SCALING";
+          spanNameFontSizing.innerText = "FONT SIZING";
+          spanNameLineHeight.innerText = "LINE HEIGHT";
+          spanNameLetterSpacing.innerText = "LETTER SPACING";
+          spanNameTitlesHighlight.innerText = "TITLES HIGHLIGHT";
+          spanNameLinksHighlight.innerText = "LINKS HIGHLIGHT";
+
+          //colors submenu
+          spanNameColorAdjustments.innerText = "COLORS ADJUSTING";
+          spanNameContrast.innerText = "CONTRAST";
+          spanNameSaturation.innerText = "SATURATION";
+          spanNameColorsInversed.innerText = "COLORS INVERSED";
+          spanNameWhiteBackground.innerText = "WHITE BACKGROUND";
+
+          accessibilityLangSlider.classList.remove(
+            "accessibility-language__slider--ro"
+          );
+          accessibilityLangSlider.classList.add(
+            "accessibility-language__slider--eng"
+          );
+        }
+      },
     },
   };
 
-  #controller() {
-    const accessibilityContent = document.getElementById(
-      "accessibilityContent"
-    );
-    const accessibilityColors = document.getElementById("accessibilityColors");
+  #controller = {
+    init() {
+      this.main();
+      this.contentAdjusting();
+      this.colorAdjusting();
+    },
+    //prettier-ignore
+    main: () => {
+      const accessibilityMenu = document.getElementById("accessibilityMenu");
+      const accessibilityCloseBtn = document.getElementById("accessibilityCloseBtn");
+      const accessibilityBtn = document.getElementById('accessibilityBtn')
+      const accessibilityLanguageContainer = document.getElementById('accessibilityLanguageContainer')
 
-    accessibilityContent.addEventListener("click", (e) => {
-      const clickedId = e.target.id;
+      accessibilityBtn.addEventListener('click', () => {
+        accessibilityMenu.style.display = "block"
+      })
 
-      // RESET
-      if (clickedId === "contentResetBtnImg") this.contentAdjustments.reset();
+      accessibilityCloseBtn.addEventListener('click', () => {
+        accessibilityMenu.style.display = "none";
+      })  
 
-      // CONTENT SCALE
-      if (clickedId === "plusBtnMarimeContinut")
-        this.contentAdjustments.contentScaling.increase();
+      accessibilityLanguageContainer.addEventListener("click", () => {
+          this.#dom.state.lang === "eng" ? 
+          this.#dom._util.setLang("ro") :
+          this.#dom._util.setLang("eng")
+        });
+    },
 
-      // FONT SIZE
-      if (clickedId === "plusBtnMarimeFont")
-        this.contentAdjustments.fontSizing.increase();
-      if (clickedId === "minusBtnMarimeFont")
-        this.contentAdjustments.fontSizing.decrease();
+    //bind this -> contentAdjustments
+    //prettier-ignore
+    contentAdjusting() {
+      const plusBtnFontSizing = document.getElementById("plusBtnFontSizing");
+      const minusBtnFontSizing = document.getElementById("minusBtnFontSizing");
+      const plusBtnLineHeight = document.getElementById("plusBtnLineHeight");
+      const minusBtnLineHeight = document.getElementById("minusBtnLineHeight");
+      const plusBtnLetterSpacing = document.getElementById("plusBtnLetterSpacing");
+      const minusBtnLetterSpacing = document.getElementById("minusBtnLetterSpacing");
+      const btnTitlesHighlight = document.getElementById("btnTitlesHighlight");
+      const btnLinksHighlight = document.getElementById("btnLinksHighlight");
+      const contentResetBtn = document.getElementById('contentResetBtn')
 
-      // LINE HEIGHT SPACING
-      if (clickedId === "plusBtnSpatiereRanduri")
-        this.contentAdjustments.lineHeight.increase();
-      if (clickedId === "minusBtnSpatiereRanduri")
-        this.contentAdjustments.lineHeight.decrease();
+      contentResetBtn.addEventListener('click', () => this.reset())
 
-      // LETTER SPACING
-      if (clickedId === "plusBtnSpatiereLitere")
-        this.contentAdjustments.letterSpacing.increase();
-      if (clickedId === "minusBtnSpatiereLitere")
-        this.contentAdjustments.letterSpacing.decrease();
+      plusBtnFontSizing.addEventListener("click", () => this.fontSizing.increase())
+      minusBtnFontSizing.addEventListener("click", () => this.fontSizing.decrease())
+    
+      plusBtnLineHeight.addEventListener("click", () => this.lineHeight.increase());
+      minusBtnLineHeight.addEventListener("click", () => this.lineHeight.decrease());
 
-      // HIGHLIGHT TITLES
-      if (clickedId === "btnTitluriEvidentiate") {
-        if (!this.contentAdjustments.state.isHighlightTitles) {
-          this.contentAdjustments.highlightTitles.on();
-        } else {
-          this.contentAdjustments.highlightTitles.off();
-        }
-      }
+      plusBtnLetterSpacing.addEventListener("click", () => this.letterSpacing.increase());
+      minusBtnLetterSpacing.addEventListener("click", () => this.letterSpacing.decrease())
 
-      // HIGHLIGHT LINKS
-      if (clickedId === "btnLinkuriEvidentiate") {
-        if (!this.contentAdjustments.state.isHighlightLinks) {
-          this.contentAdjustments.highlightLinks.on();
-        } else {
-          this.contentAdjustments.highlightLinks.off();
-        }
-      }
-    });
+      btnTitlesHighlight.addEventListener("click", () => {
+        this.state.isTitlesHighlight ? this.titlesHighlight.off() : this.titlesHighlight.on();        
+      });
 
-    accessibilityColors.addEventListener("click", (e) => {
-      const clickedId = e.target.id;
+      btnLinksHighlight.addEventListener("click", () => {
+        this.state.isLinksHighlight ? this.linksHighlight.off() : this.linksHighlight.on();
+      });
+    },
 
-      if (clickedId === "colorResetBtnImg") this.colorAdjustments.reset();
+    //bind this -> colorAdjustments
+    //prettier-ignore
+    colorAdjusting() {
+      const btnResetColor = document.getElementById('accessibilityColorResetBtn')
+      const btnPlusContrast = document.getElementById("plusBtnContrast");
+      const btnMinusContrast = document.getElementById("minusBtnContrast");
+      const btnPlusSaturation = document.getElementById('plusBtnSaturation')
+      const btnMinusSaturation = document.getElementById('minusBtnSaturation')
+      const btnInversedColors = document.getElementById('btnColorsInversed') 
+      const btnBackgroundWhite = document.getElementById('btnWhiteBackground')
 
-      if (clickedId === "plusBtnContrast")
-        this.colorAdjustments.contrast.increase();
-      if (clickedId === "minusBtnContrast")
-        this.colorAdjustments.contrast.decrease();
+      btnResetColor.addEventListener('click', () => this.reset())
 
-      if (clickedId === "plusBtnSaturatie")
-        this.colorAdjustments.saturation.increase();
-      if (clickedId === "minusBtnSaturatie")
-        this.colorAdjustments.saturation.decrease();
+      btnPlusContrast.addEventListener('click', () => this.contrast.increase())
+      btnMinusContrast.addEventListener('click', () => this.contrast.decrease())
 
-      if (clickedId === "btnInverseazaCulori") {
-        if (!this.colorAdjustments.state.isInvert) {
-          this.colorAdjustments.invert.on();
-        } else {
-          this.colorAdjustments.invert.off();
-        }
-      }
+      btnPlusSaturation.addEventListener('click', () => this.saturation.increase())
+      btnMinusSaturation.addEventListener('click', () => this.saturation.decrease())
 
-      if (clickedId === "btnFundalAlb") {
-        if (!this.colorAdjustments.state.isBackgroundWhite) {
-          this.colorAdjustments.backgroundWhite.on();
-        } else {
-          this.colorAdjustments.backgroundWhite.off();
-        }
-      }
-    });
-  }
+      btnInversedColors.addEventListener('click', () => {
+        this.state.isInvert ?  this.invert.off() : this.invert.on()                
+      })
 
+      btnBackgroundWhite.addEventListener('click', () => {
+         this.state.isBackgroundWhite ? this.backgroundWhite.off() : this.backgroundWhite.on()              
+      })
+    },
+  };
+
+  //prettier-ignore
   #bindObjects() {
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.fontSizing,
-      "_resizeFont",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.lineHeight,
-      "_resizeLineHeight",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.letterSpacing,
-      "increase",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.letterSpacing,
-      "decrease",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.letterSpacing,
-      "reset",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.highlightTitles,
-      "on",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.highlightTitles,
-      "off",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.highlightLinks,
-      "on",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.contentAdjustments.highlightLinks,
-      "off",
-      this.contentAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.contrast,
-      "increase",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.contrast,
-      "decrease",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.contrast,
-      "reset",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.saturation,
-      "increase",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.saturation,
-      "decrease",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.saturation,
-      "reset",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.invert,
-      "on",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.invert,
-      "off",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.backgroundWhite,
-      "on",
-      this.colorAdjustments
-    );
-    this.#helpersFunc.bindObj(
-      this.colorAdjustments.backgroundWhite,
-      "off",
-      this.colorAdjustments
-    );
+    this.#helpersFunc.bindObj(this.contentAdjustments.fontSizing,"_resizeFont",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.lineHeight,"_resizeLineHeight",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.letterSpacing,"increase",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.letterSpacing,"decrease",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.letterSpacing,"reset",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.titlesHighlight,"on",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.titlesHighlight,"off",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.linksHighlight,"on",this.contentAdjustments);
+    this.#helpersFunc.bindObj(this.contentAdjustments.linksHighlight,"off",this.contentAdjustments);
+    
+    this.#helpersFunc.bindObj(this.colorAdjustments.contrast,"increase",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.contrast,"decrease",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.contrast,"reset",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.saturation,"increase",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.saturation,"decrease",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.saturation,"reset",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.invert,"on",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.invert,"off",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.backgroundWhite,"on",this.colorAdjustments);
+    this.#helpersFunc.bindObj(this.colorAdjustments.backgroundWhite,"off",this.colorAdjustments);
+    
+    this.#helpersFunc.bindObj(this.#dom._util, "setLang", this.#dom);
+
+    this.#helpersFunc.bindObj(this.#controller,"contentAdjusting",this.contentAdjustments);  
+    this.#helpersFunc.bindObj(this.#controller,"colorAdjusting",this.colorAdjustments);   
   }
 
   #helpersFunc = {
