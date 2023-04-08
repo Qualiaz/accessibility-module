@@ -12,6 +12,8 @@ import contrastSVG from "./assets/contrast.svg";
 import saturationSVG from "./assets/saturation.svg";
 import invertSVG from "./assets/invert.svg";
 
+import readingGuidieSVG from "./assets/reading-guide.svg";
+
 import "./style/main.scss";
 
 class Accessibility {
@@ -365,8 +367,8 @@ class Accessibility {
     reset() {
       this.contrast.reset();
       this.saturation.reset();
-      // this.invert.off();
-      // this.backgroundWhite.off();
+      this.invert.off();
+      this.backgroundWhite.off();
     },
 
     _util: {
@@ -385,12 +387,42 @@ class Accessibility {
   };
 
   tools = {
+    state: {
+      isFlashlight: false,
+      isReadingGuide: false,
+    },
+
     flashlight: {
-      state: {
-        isOn: false,
-      },
       on() {},
       off() {},
+    },
+
+    readingGuide: {
+      on() {
+        this.state.isReadingGuide = true;
+        this.util.toggleRender("btnReadingGuide", true);
+        const cursorLine = document.getElementById("accessibilityCursorLine");
+        cursorLine.classList.remove("accessibility-hidden");
+
+        document.addEventListener("mousemove", function (event) {
+          cursorLine.style.left = event.pageX - 150 + "px";
+          cursorLine.style.top = event.pageY - 15 + "px";
+        });
+      },
+      off() {
+        this.state.isReadingGuide = false;
+        this.util.toggleRender("btnReadingGuide", false);
+        const cursorLine = document.getElementById("accessibilityCursorLine");
+        cursorLine.classList.add("accessibility-hidden");
+      },
+    },
+
+    util: {
+      toggleRender: (elId, state) => {
+        const toggleBtnEl = document.getElementById(elId);
+        if (state) toggleBtnEl.classList.add("on");
+        else toggleBtnEl.classList.remove("on");
+      },
     },
   };
 
@@ -404,6 +436,8 @@ class Accessibility {
       this.header();
       this.createContentSubmenu();
       this.createColorSubmenu();
+      this.createToolsSubmenu();
+      this.createCursorLine();
       this._util.setLang();
     },
 
@@ -671,6 +705,62 @@ class Accessibility {
       return colorContainer;
     },
 
+    createToolsSubmenu() {
+      const accessibilityTools = document.createElement("div");
+      accessibilityTools.id = "accessibilityTools";
+      accessibilityTools.classList.add("accessibility-main__tools");
+
+      const toolsHeader = document.createElement("div");
+      toolsHeader.classList.add("accessibility-tools__header");
+
+      const spanNameTools = document.createElement("span");
+      spanNameTools.id = "spanNameTools";
+      spanNameTools.textContent = "UNELTE";
+
+      const resetBtnWrapper = document.createElement("div");
+      resetBtnWrapper.classList.add("accessibility-tools__reset-btn-wrapper");
+
+      const resetBtn = document.createElement("button");
+      resetBtn.classList.add("reset-btn");
+      resetBtn.id = "accessibilityToolsResetBtn";
+
+      const resetBtnImg = document.createElement("img");
+      resetBtnImg.classList.add("reset-btn-img");
+      resetBtnImg.src = "./assets/reset.svg";
+      resetBtnImg.alt = "reset tools button";
+      resetBtnImg.id = "toolsResetBtnImg";
+
+      resetBtn.appendChild(resetBtnImg);
+      resetBtnWrapper.appendChild(resetBtn);
+
+      toolsHeader.appendChild(spanNameTools);
+      toolsHeader.appendChild(resetBtnWrapper);
+
+      const accessibilityReadingGuideWrapper = document.createElement("div");
+      accessibilityReadingGuideWrapper.classList.add(
+        "accessibility-reading-guide__wrapper"
+      );
+
+      const accessibilityFlashlightWrapper = document.createElement("div");
+      accessibilityFlashlightWrapper.classList.add(
+        "accessibility-flashlight__wrapper"
+      );
+
+      accessibilityTools.appendChild(toolsHeader);
+      accessibilityTools.appendChild(accessibilityReadingGuideWrapper);
+      accessibilityTools.appendChild(accessibilityFlashlightWrapper);
+
+      const readingGuideComponent = this.createToggleComponent(
+        "READING GUIDE",
+        readingGuidieSVG
+      );
+      accessibilityReadingGuideWrapper.appendChild(readingGuideComponent);
+
+      document
+        .getElementById("accessibilityMain")
+        .appendChild(accessibilityTools);
+    },
+
     createUpDownComponent(name, iconSrc, percentage = "100%") {
       const componentContainer = document.createElement("div");
       const divNameContainer = document.createElement("div");
@@ -740,7 +830,6 @@ class Accessibility {
     },
 
     createToggleComponent(name, iconSrc) {
-      // Create the main container
       const toggleContainer = document.createElement("div");
       const nameContainer = document.createElement("div");
       const image = document.createElement("img");
@@ -773,7 +862,13 @@ class Accessibility {
       toggleContainer.appendChild(btnWrapper);
 
       return toggleContainer;
-      // document.body.appendChild(toggleContainer);
+    },
+
+    createCursorLine() {
+      const cursorLine = document.createElement("div");
+      cursorLine.classList.add("accessibility-tools__cursor-line");
+      cursorLine.id = "accessibilityCursorLine";
+      document.body.appendChild(cursorLine);
     },
 
     _util: {
@@ -898,7 +993,9 @@ class Accessibility {
       this.main();
       this.contentAdjusting();
       this.colorAdjusting();
+      this.tools();
     },
+
     //prettier-ignore
     main: () => {
       const accessibilityMenu = document.getElementById("accessibilityMenu");
@@ -981,6 +1078,17 @@ class Accessibility {
          this.state.isBackgroundWhite ? this.backgroundWhite.off() : this.backgroundWhite.on()              
       })
     },
+
+    //bind this -> tools
+    //prettier-ignore
+    tools() {
+      const btnReadingGuide = document.getElementById('btnReadingGuide')
+      btnReadingGuide.addEventListener('click', () => {
+        this.state.isReadingGuide ?
+        this.readingGuide.off() :
+        this.readingGuide.on()
+      })
+    },
   };
 
   //prettier-ignore
@@ -1006,10 +1114,14 @@ class Accessibility {
     this.#helpersFunc.bindObj(this.colorAdjustments.backgroundWhite,"on",this.colorAdjustments);
     this.#helpersFunc.bindObj(this.colorAdjustments.backgroundWhite,"off",this.colorAdjustments);
     
-    this.#helpersFunc.bindObj(this.#dom._util, "setLang", this.#dom);
+    this.#helpersFunc.bindObj(this.tools.readingGuide,"on",this.tools);
+    this.#helpersFunc.bindObj(this.tools.readingGuide,"off",this.tools);
+    
+    this.#helpersFunc.bindObj(this.#dom._util, "setLang",this.#dom);
 
     this.#helpersFunc.bindObj(this.#controller,"contentAdjusting",this.contentAdjustments);  
     this.#helpersFunc.bindObj(this.#controller,"colorAdjusting",this.colorAdjustments);   
+    this.#helpersFunc.bindObj(this.#controller,"tools",this.tools);   
   }
 
   #helpersFunc = {
