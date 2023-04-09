@@ -13,6 +13,7 @@ import saturationSVG from "./assets/saturation.svg";
 import invertSVG from "./assets/invert.svg";
 
 import readingGuidieSVG from "./assets/reading-guide.svg";
+import flashlightSVG from "./assets/flashlight.svg";
 
 import "./style/main.scss";
 
@@ -393,8 +394,29 @@ class Accessibility {
     },
 
     flashlight: {
-      on() {},
-      off() {},
+      on(e) {
+        const maskEl = document.querySelector(
+          ".accessibility-flashlight__mask"
+        );
+        const holeEl = document.querySelector(
+          ".accessibility-flashlight__hole"
+        );
+
+        document.addEventListener("mousemove", (e) => {
+          this.util.readingMask(maskEl, holeEl, e);
+        });
+
+        maskEl.style.display = "block";
+
+        this.state.isFlashlight = true;
+        this.util.toggleRender("btnFlashlight", true);
+      },
+      off() {
+        const mask = document.querySelector(".accessibility-flashlight__mask");
+        mask.style.display = "none";
+        this.state.isFlashlight = false;
+        this.util.toggleRender("btnFlashlight", false);
+      },
     },
 
     readingGuide: {
@@ -423,6 +445,23 @@ class Accessibility {
         if (state) toggleBtnEl.classList.add("on");
         else toggleBtnEl.classList.remove("on");
       },
+      readingMask(mask, hole, e) {
+        hole.style.top = `${e.clientY - hole.offsetHeight / 2}px`;
+        const y = e.clientY - hole.offsetHeight / 2;
+
+        mask.style.clipPath = `polygon(
+            0% 0%,
+            0% 100%,
+            ${hole.offsetLeft}px 100%,
+            ${hole.offsetLeft}px ${y}px,
+            ${hole.offsetLeft + hole.offsetWidth}px ${y}px,
+            ${hole.offsetLeft + hole.offsetWidth}px ${y + hole.offsetHeight}px,
+            ${hole.offsetLeft}px ${y + hole.offsetHeight}px,
+            ${hole.offsetLeft}px 100%,
+            100% 100%,
+            100% 0%
+          )`;
+      },
     },
   };
 
@@ -438,6 +477,7 @@ class Accessibility {
       this.createColorSubmenu();
       this.createToolsSubmenu();
       this.createCursorLine();
+      this.createReadingMask();
       this._util.setLang();
     },
 
@@ -754,7 +794,14 @@ class Accessibility {
         "READING GUIDE",
         readingGuidieSVG
       );
+
+      const flashlightComponent = this.createToggleComponent(
+        "FLASHLIGHT",
+        flashlightSVG
+      );
+
       accessibilityReadingGuideWrapper.appendChild(readingGuideComponent);
+      accessibilityFlashlightWrapper.appendChild(flashlightComponent);
 
       document
         .getElementById("accessibilityMain")
@@ -841,7 +888,9 @@ class Accessibility {
       image.src = iconSrc;
       image.alt = "";
       const [nameTop, nameBottom] = name.split(" ");
-      nameSpan.innerHTML = `${nameTop} <br /> ${nameBottom}`;
+      nameSpan.innerHTML = `${nameTop} <br /> ${
+        nameBottom === undefined ? "" : nameBottom
+      }`;
 
       toggleContainer.classList.add(
         "accessibility-component__toggle-container"
@@ -864,11 +913,26 @@ class Accessibility {
       return toggleContainer;
     },
 
+    ////////////
     createCursorLine() {
       const cursorLine = document.createElement("div");
-      cursorLine.classList.add("accessibility-tools__cursor-line");
+      cursorLine.setAttribute(
+        "class",
+        "accessibility-tools__cursor-line accessibility-hidden"
+      );
       cursorLine.id = "accessibilityCursorLine";
       document.body.appendChild(cursorLine);
+    },
+
+    createReadingMask() {
+      var maskDiv = document.createElement("div");
+      maskDiv.classList.add("accessibility-flashlight__mask");
+
+      var holeDiv = document.createElement("div");
+      holeDiv.classList.add("accessibility-flashlight__hole");
+
+      maskDiv.appendChild(holeDiv);
+      document.querySelector("body").appendChild(maskDiv);
     },
 
     _util: {
@@ -1083,11 +1147,19 @@ class Accessibility {
     //prettier-ignore
     tools() {
       const btnReadingGuide = document.getElementById('btnReadingGuide')
+      const btnFlashlight = document.getElementById('btnFlashlight')
+
       btnReadingGuide.addEventListener('click', () => {
         this.state.isReadingGuide ?
         this.readingGuide.off() :
         this.readingGuide.on()
       })
+
+      btnFlashlight.addEventListener('click', () => {
+        this.state.isFlashlight ?
+        this.flashlight.off() :
+        this.flashlight.on()     
+      })      
     },
   };
 
@@ -1116,6 +1188,8 @@ class Accessibility {
     
     this.#helpersFunc.bindObj(this.tools.readingGuide,"on",this.tools);
     this.#helpersFunc.bindObj(this.tools.readingGuide,"off",this.tools);
+    this.#helpersFunc.bindObj(this.tools.flashlight,"on",this.tools);
+    this.#helpersFunc.bindObj(this.tools.flashlight,"off",this.tools);
     
     this.#helpersFunc.bindObj(this.#dom._util, "setLang",this.#dom);
 
