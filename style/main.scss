@@ -374,3 +374,20 @@ $sectionBackground: #eaf1fc;
   height: 150px;
   z-index: 999999;
 }
+
+.cursor {
+  position: absolute;
+  top: 100rem;
+  left: 30px;
+  width: 64px;
+  height: 64px;
+  background-image: url("https://cdn-icons-png.flaticon.com/512/9915/9915925.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+body * {
+  // cursor: none;
+}

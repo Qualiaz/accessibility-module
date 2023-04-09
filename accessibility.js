@@ -391,10 +391,11 @@ class Accessibility {
     state: {
       isFlashlight: false,
       isReadingGuide: false,
+      isHideImages: false,
     },
 
     flashlight: {
-      on(e) {
+      on() {
         const maskEl = document.querySelector(
           ".accessibility-flashlight__mask"
         );
@@ -436,6 +437,30 @@ class Accessibility {
         this.util.toggleRender("btnReadingGuide", false);
         const cursorLine = document.getElementById("accessibilityCursorLine");
         cursorLine.classList.add("accessibility-hidden");
+      },
+    },
+
+    hideImages: {
+      on() {
+        const imgs = document.querySelectorAll("img:not(.accessibility__img)");
+        imgs.forEach((img) => {
+          if (!img.dataset.initialImgDisplay) {
+            const elStyles = window.getComputedStyle(img);
+            const elVisibility = elStyles.getPropertyValue("visibility");
+            img.dataset.initialImgVisibility = elVisibility;
+          }
+          img.style.visibility = "hidden";
+        });
+        this.state.isHideImages = true;
+        this.util.toggleRender("btnHideImages", true);
+      },
+      off() {
+        const imgs = document.querySelectorAll("img:not(.accessibility__img)");
+        imgs.forEach((img) => {
+          img.style.visibility = img.dataset.initialImgVisibility;
+        });
+        this.state.isHideImages = false;
+        this.util.toggleRender("btnHideImages", false);
       },
     },
 
@@ -490,6 +515,7 @@ class Accessibility {
 
       const img = document.createElement("img");
       img.setAttribute("id", "accessibilityBtnIcon");
+      img.setAttribute("class", "accessibility__img");
       img.setAttribute("src", "./assets/ion_accessibility.svg");
       img.setAttribute("alt", "accessibility button");
 
@@ -512,10 +538,12 @@ class Accessibility {
       const romanianImg = document.createElement("img");
       romanianImg.src = "./assets/romanian.png";
       romanianImg.alt = "romanian language";
+      romanianImg.setAttribute("class", "accessibility__img");
 
       const englishImg = document.createElement("img");
       englishImg.src = "./assets/english.png";
       englishImg.alt = "english language";
+      englishImg.setAttribute("class", "accessibility__img");
 
       const languageSlider = document.createElement("span");
       languageSlider.setAttribute(
@@ -550,6 +578,7 @@ class Accessibility {
       closeBtnImg.src = "./assets/close.svg";
       closeBtnImg.alt = "accessibility button image";
       closeBtnImg.id = "accessbilityCloseBtnImg";
+      closeBtnImg.setAttribute("class", "accessibility__img close-btn-img");
 
       closeBtn.appendChild(closeBtnImg);
 
@@ -582,9 +611,9 @@ class Accessibility {
       resetBtn.id = "contentResetBtn";
 
       const resetBtnImg = document.createElement("img");
-      resetBtnImg.classList.add("reset-btn-img");
       resetBtnImg.setAttribute("src", "./assets/reset.svg");
       resetBtnImg.setAttribute("alt", "reset content button");
+      resetBtnImg.setAttribute("class", "accessibility__img reset-btn-img");
       resetBtnImg.id = "contentResetBtnImg";
 
       resetBtn.appendChild(resetBtnImg);
@@ -679,6 +708,7 @@ class Accessibility {
       const invertWrapper = document.createElement("div");
       const saturationWrapper = document.createElement("div");
       const backgroundWhiteWrapper = document.createElement("div");
+      const resetBtnImg = document.createElement("img");
 
       colorContainer.classList.add("accessibility-main__colors-adjustments");
       colorContainer.id = "accessibilityColors";
@@ -698,10 +728,10 @@ class Accessibility {
       resetBtn.classList.add("reset-btn");
       resetBtn.id = "accessibilityColorResetBtn";
 
-      const resetBtnImg = document.createElement("img");
       resetBtnImg.classList.add("reset-btn-img");
       resetBtnImg.setAttribute("src", "./assets/reset.svg");
-      resetBtnImg.setAttribute("alt", "");
+      resetBtnImg.setAttribute("alt", "reset button");
+      resetBtnImg.setAttribute("class", "accessibility__img reset-btn-img");
       resetBtnImg.id = "colorResetBtnImg";
 
       resetBtn.appendChild(resetBtnImg);
@@ -765,7 +795,7 @@ class Accessibility {
       resetBtn.id = "accessibilityToolsResetBtn";
 
       const resetBtnImg = document.createElement("img");
-      resetBtnImg.classList.add("reset-btn-img");
+      resetBtnImg.setAttribute("class", "accessibility__img reset-btn-img");
       resetBtnImg.src = "./assets/reset.svg";
       resetBtnImg.alt = "reset tools button";
       resetBtnImg.id = "toolsResetBtnImg";
@@ -786,9 +816,15 @@ class Accessibility {
         "accessibility-flashlight__wrapper"
       );
 
+      const accessibilityHideImagesWrapper = document.createElement("div");
+      accessibilityHideImagesWrapper.classList.add(
+        "accessibility-hide-images__wrapper"
+      );
+
       accessibilityTools.appendChild(toolsHeader);
       accessibilityTools.appendChild(accessibilityReadingGuideWrapper);
       accessibilityTools.appendChild(accessibilityFlashlightWrapper);
+      accessibilityTools.appendChild(accessibilityHideImagesWrapper);
 
       const readingGuideComponent = this.createToggleComponent(
         "READING GUIDE",
@@ -800,8 +836,14 @@ class Accessibility {
         flashlightSVG
       );
 
+      const hideImagesComponent = this.createToggleComponent(
+        "HIDE IMAGES",
+        flashlightSVG
+      );
+
       accessibilityReadingGuideWrapper.appendChild(readingGuideComponent);
       accessibilityFlashlightWrapper.appendChild(flashlightComponent);
+      accessibilityHideImagesWrapper.appendChild(hideImagesComponent);
 
       document
         .getElementById("accessibilityMain")
@@ -827,14 +869,20 @@ class Accessibility {
         "accessibility-component__up-down-buttons"
       );
       divNameContainer.setAttribute("class", "up-down-buttons__name-container");
-      img.setAttribute("class", "up-down-buttons__img");
+      img.setAttribute("class", "accessibility__img up-down-buttons__img");
       img.setAttribute("src", iconSrc);
 
       spanName.setAttribute("id", `spanName${this._util.formatName(name)}`);
       buttonPlus.setAttribute("id", `plusBtn${this._util.formatName(name)}`);
-      imgPlus.setAttribute("class", "up-down-buttons__plus-btn-img");
+      imgPlus.setAttribute(
+        "class",
+        "accessibility__img up-down-buttons__plus-btn-img"
+      );
       imgPlus.setAttribute("id", `plusBtnImg${this._util.formatName(name)}`);
-      imgMinus.setAttribute("class", "up-down-buttons__minus-btn-img");
+      imgMinus.setAttribute(
+        "class",
+        "accessibility__img up-down-buttons__minus-btn-img"
+      );
       imgMinus.setAttribute("id", `minusBtnImg${this._util.formatName(name)}`);
       buttonMinus.setAttribute("id", `minusBtn${this._util.formatName(name)}`);
       spanPercentage.setAttribute(
@@ -879,14 +927,16 @@ class Accessibility {
     createToggleComponent(name, iconSrc) {
       const toggleContainer = document.createElement("div");
       const nameContainer = document.createElement("div");
-      const image = document.createElement("img");
+      const img = document.createElement("img");
       const nameWrapper = document.createElement("div");
       const nameSpan = document.createElement("span");
       const btnWrapper = document.createElement("div");
       const btn = document.createElement("button");
 
-      image.src = iconSrc;
-      image.alt = "";
+      img.src = iconSrc;
+      img.alt = "image component";
+      img.setAttribute("class", "accessibility__img");
+
       const [nameTop, nameBottom] = name.split(" ");
       nameSpan.innerHTML = `${nameTop} <br /> ${
         nameBottom === undefined ? "" : nameBottom
@@ -902,9 +952,9 @@ class Accessibility {
       nameSpan.id = `spanName${this._util.formatName(name)}`;
       btn.id = "btn" + this._util.formatName(name);
 
-      nameWrapper.appendChild(image);
+      nameWrapper.appendChild(img);
       nameWrapper.appendChild(nameSpan);
-      nameContainer.appendChild(image);
+      nameContainer.appendChild(img);
       nameContainer.appendChild(nameWrapper);
       btnWrapper.appendChild(btn);
       toggleContainer.appendChild(nameContainer);
@@ -1148,6 +1198,7 @@ class Accessibility {
     tools() {
       const btnReadingGuide = document.getElementById('btnReadingGuide')
       const btnFlashlight = document.getElementById('btnFlashlight')
+      const btnHideImages = document.getElementById('btnHideImages')
 
       btnReadingGuide.addEventListener('click', () => {
         this.state.isReadingGuide ?
@@ -1159,7 +1210,13 @@ class Accessibility {
         this.state.isFlashlight ?
         this.flashlight.off() :
         this.flashlight.on()     
-      })      
+      })    
+      
+      btnHideImages.addEventListener('click', () => {
+        this.state.isHideImages ?
+        this.hideImages.off() :
+        this.hideImages.on() 
+      })
     },
   };
 
@@ -1190,6 +1247,8 @@ class Accessibility {
     this.#helpersFunc.bindObj(this.tools.readingGuide,"off",this.tools);
     this.#helpersFunc.bindObj(this.tools.flashlight,"on",this.tools);
     this.#helpersFunc.bindObj(this.tools.flashlight,"off",this.tools);
+    this.#helpersFunc.bindObj(this.tools.hideImages,"on",this.tools);
+    this.#helpersFunc.bindObj(this.tools.hideImages,"off",this.tools);
     
     this.#helpersFunc.bindObj(this.#dom._util, "setLang",this.#dom);
 
