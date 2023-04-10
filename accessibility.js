@@ -392,6 +392,7 @@ class Accessibility {
       isFlashlight: false,
       isReadingGuide: false,
       isHideImages: false,
+      isScreenReader: false,
     },
 
     flashlight: {
@@ -464,7 +465,76 @@ class Accessibility {
       },
     },
 
+    screenReader: {
+      // this -> most outer object, need lang dom state
+      on: () => {
+        let msg = new SpeechSynthesisUtterance();
+        const setVoice = () => {
+          const { romanianVoice, englishVoice } = this.tools.util.getVoices();
+          msg.voice =
+            this.#dom.state.lang === "ro" ? romanianVoice : englishVoice;
+        };
+
+        speechSynthesis.onvoiceschanged !== undefined
+          ? (speechSynthesis.onvoiceschanged = setVoice)
+          : setVoice();
+
+        document.addEventListener("langChanged", () => {
+          setVoice();
+        });
+
+        const elems = document.querySelectorAll("*");
+        let isSpeaking = false;
+
+        const clickHandler = function (e) {
+          if (!isSpeaking) {
+            if (e.target.tagName === "IMG") {
+              msg.text = e.target.alt;
+            } else {
+              msg.text = e.target.innerText;
+            }
+            this.style.outline = "2px solid yellow";
+            speechSynthesis.speak(msg);
+            isSpeaking = true;
+
+            let interval = setInterval(() => {
+              if (!speechSynthesis.speaking) {
+                this.style.removeProperty("outline");
+                isSpeaking = false;
+                clearInterval(interval);
+              }
+            });
+          }
+        };
+
+        elems.forEach((elem) => {
+          elem.addEventListener("click", clickHandler);
+        });
+
+        this.tools.util.state.clickHandler = clickHandler;
+        this.tools.util.state.elems = elems;
+
+        this.tools.state.isScreenReader = true;
+        this.tools.util.toggleRender("btnScreenReader", true);
+      },
+
+      off() {
+        this.util.state.elems.forEach((elem) => {
+          elem.removeEventListener("click", this.util.state.clickHandler);
+        });
+
+        speechSynthesis.cancel();
+        this.state.isScreenReader = false;
+        this.util.toggleRender("btnScreenReader", false);
+      },
+    },
+
     util: {
+      state: {
+        // used for screen reader
+        clickHandler: null,
+        elems: null,
+      },
       toggleRender: (elId, state) => {
         const toggleBtnEl = document.getElementById(elId);
         if (state) toggleBtnEl.classList.add("on");
@@ -486,6 +556,12 @@ class Accessibility {
             100% 100%,
             100% 0%
           )`;
+      },
+      getVoices() {
+        let voices = speechSynthesis.getVoices();
+        let romanianVoice = voices.find((voice) => voice.lang === "ro-RO");
+        let englishVoice = voices.find((voice) => voice.lang === "en-EN");
+        return { romanianVoice, englishVoice };
       },
     },
   };
@@ -821,10 +897,16 @@ class Accessibility {
         "accessibility-hide-images__wrapper"
       );
 
+      const accessibilityScreenReaderWrapper = document.createElement("div");
+      accessibilityHideImagesWrapper.classList.add(
+        "accessibility-screen-reader__wrapper"
+      );
+
       accessibilityTools.appendChild(toolsHeader);
       accessibilityTools.appendChild(accessibilityReadingGuideWrapper);
       accessibilityTools.appendChild(accessibilityFlashlightWrapper);
       accessibilityTools.appendChild(accessibilityHideImagesWrapper);
+      accessibilityTools.appendChild(accessibilityScreenReaderWrapper);
 
       const readingGuideComponent = this.createToggleComponent(
         "READING GUIDE",
@@ -841,9 +923,15 @@ class Accessibility {
         flashlightSVG
       );
 
+      const screenReaderComponent = this.createToggleComponent(
+        "SCREEN READER",
+        flashlightSVG
+      );
+
       accessibilityReadingGuideWrapper.appendChild(readingGuideComponent);
       accessibilityFlashlightWrapper.appendChild(flashlightComponent);
       accessibilityHideImagesWrapper.appendChild(hideImagesComponent);
+      accessibilityScreenReaderWrapper.appendChild(screenReaderComponent);
 
       document
         .getElementById("accessibilityMain")
@@ -1045,9 +1133,10 @@ class Accessibility {
         //
         if (lang === "ro") {
           this.state.lang = "ro";
+          document.dispatchEvent(new Event("langChanged"));
 
           accessibilityTitle.innerText = "SETARI ACCESIBILITATE";
-          spanNameContentAdjusting.innerText = "ADJUSTARE CONTINUT";
+          spanNameContentAdjusting.innerText = "AJUSTARE CONTINUT";
           //content submenu
           spanNameContentScaling.innerText = "SCALARE CONTINUT";
           spanNameFontSizing.innerText = "MARIME FONT";
@@ -1057,7 +1146,7 @@ class Accessibility {
           spanNameLinksHighlight.innerText = "LINKURI EVIDENTIATE";
 
           //colors submenu
-          spanNameColorAdjustments.innerText = "ADJUSTARE CULORI";
+          spanNameColorAdjustments.innerText = "AJUSTARE CULORI";
           spanNameContrast.innerText = "CONTRAST";
           spanNameSaturation.innerText = "SATURATIE";
           spanNameColorsInversed.innerText = "INVERSARE CULORI";
@@ -1073,6 +1162,7 @@ class Accessibility {
 
         if (lang === "eng") {
           this.state.lang = "eng";
+          document.dispatchEvent(new Event("langChanged"));
 
           accessibilityTitle.innerText = "ACCESSIBILITY SETTINGS";
           spanNameContentAdjusting.innerText = "CONTENT ADJUSTING";
@@ -1199,6 +1289,7 @@ class Accessibility {
       const btnReadingGuide = document.getElementById('btnReadingGuide')
       const btnFlashlight = document.getElementById('btnFlashlight')
       const btnHideImages = document.getElementById('btnHideImages')
+      const btnScreenReader = document.getElementById('btnScreenReader')
 
       btnReadingGuide.addEventListener('click', () => {
         this.state.isReadingGuide ?
@@ -1216,6 +1307,12 @@ class Accessibility {
         this.state.isHideImages ?
         this.hideImages.off() :
         this.hideImages.on() 
+      })
+
+      btnScreenReader.addEventListener('click', () => {
+        this.state.isScreenReader ?
+        this.screenReader.off() :
+        this.screenReader.on()
       })
     },
   };
@@ -1249,6 +1346,8 @@ class Accessibility {
     this.#helpersFunc.bindObj(this.tools.flashlight,"off",this.tools);
     this.#helpersFunc.bindObj(this.tools.hideImages,"on",this.tools);
     this.#helpersFunc.bindObj(this.tools.hideImages,"off",this.tools);
+    // this.#helpersFunc.bindObj(this.tools.screenReader,"on",this.tools);
+    this.#helpersFunc.bindObj(this.tools.screenReader,"off",this.tools);
     
     this.#helpersFunc.bindObj(this.#dom._util, "setLang",this.#dom);
 
