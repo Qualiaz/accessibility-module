@@ -1,13 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Indie+Flower&family=Roboto+Condensed:ital,wght@0,400;0,700;1,300;1,400&display=swap");
 
 $mainBtnBackground: #f1f1f1;
-$background: #c0d9ff;
-$offTogledBtn: lighten($background, 5%);
-$text: #1c54a8;
-$button: #327def;
-$white: #fff;
-$sectionBackground: #eaf1fc;
 
+:root {
+  --sectionBackground: #eaf1fc; // #000B1B
+  --button: #327def; // #192F5D
+  --background: #c0d9ff;
+  --offToggledBtn: #2e5fa3;
+  --onToggleBtn: #d3e3fa;
+  --component: #fff; // 15253B
+  --text: #1c54a8;
+  --componentBtns: #c0d9ff;
+  --slider: #327def;
+  --componentName: #c0d9ff;
+  --closeBtn: #c0d9ff;
+}
 #accessibilityBtn {
   width: 50px;
   height: 50px;
@@ -23,8 +30,6 @@ $sectionBackground: #eaf1fc;
 
 #accessibilityBtnIcon {
   width: 30px;
-  // outline: 2px solid red;
-  // position: fixed;
   transform: translateY(0.1rem);
 }
 
@@ -39,9 +44,10 @@ $sectionBackground: #eaf1fc;
     justify-content: space-around;
     align-items: center;
     position: relative;
-    background-color: $white;
+    background-color: var(--component);
     z-index: 8997;
     padding: 0.3rem;
+    min-width: 80px;
     border-radius: 1rem;
     width: 4rem;
     flex: 1;
@@ -55,9 +61,9 @@ $sectionBackground: #eaf1fc;
     }
 
     .accessibility-language__slider {
-      background-color: $button;
-      width: 35px;
-      height: 1.5rem;
+      background-color: var(--slider);
+      width: 40px;
+      height: 28px;
       border-radius: 10px;
       position: absolute;
       top: 50%;
@@ -66,7 +72,7 @@ $sectionBackground: #eaf1fc;
       opacity: 1;
       transition: 0.3s;
       &--eng {
-        transform: translate(60%, -50%);
+        transform: translate(50%, -50%);
       }
       &--ro {
         transform: translate(-48%, -50%);
@@ -75,31 +81,35 @@ $sectionBackground: #eaf1fc;
   }
 
   &__title-wrapper {
-    flex: 4;
+    flex: 10;
     display: flex;
     justify-content: center;
+    align-items: center;
     font-size: 20px;
   }
 
   &__close-btn-wrapper {
     flex: 1;
     display: flex;
-    justify-content: end;
+    // justify-content: end;
     align-items: center;
     .close-btn {
       background: none;
       border: none;
       padding: 0;
-      height: 18px;
     }
+  }
+
+  &__theme-btn {
+    background: none;
+    border: none;
+    margin-right: 5px;
   }
 }
 
-// menu
+//// MENU ////
 #accessibilityMenu {
-  background-color: $background;
-  //   height: 40rem;
-  // width: 480px;
+  background: var(--background);
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
@@ -109,7 +119,18 @@ $sectionBackground: #eaf1fc;
   border-radius: 0.5rem;
   font-family: "Actor", sans-serif;
   font-size: 16px;
-  color: $text;
+  color: var(--text);
+  transition: 0.2s;
+
+  .accessibility-icon__path {
+    &--stroke {
+      stroke: var(--text);
+    }
+    &--fill {
+      fill: var(--text);
+      transition: 0.5s;
+    }
+  }
 }
 
 .accessibility-main {
@@ -117,6 +138,10 @@ $sectionBackground: #eaf1fc;
   flex-direction: column;
   padding: 1rem;
   gap: 1rem;
+}
+
+.accessibility-component__name {
+  color: var(--componentName);
 }
 
 //content adjustment section
@@ -129,11 +154,12 @@ $sectionBackground: #eaf1fc;
   width: 100%;
   justify-content: stretch;
   align-items: stretch;
-  background-color: $sectionBackground;
+  background-color: var(--sectionBackground);
   padding: 1rem;
   flex-wrap: wrap;
   border-radius: 0.5rem;
   width: 450px;
+  transition: 0.2s;
 }
 
 .accessibility-content__header,
@@ -147,39 +173,46 @@ $sectionBackground: #eaf1fc;
 
 // components
 .accessibility-component__up-down-buttons {
-  background-color: $white;
+  background-color: var(--component);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.2rem;
-  padding: 0.3rem 0.5rem;
+  align-items: stretch;
+  padding: 10px 8px;
   border-radius: 0.5rem;
-  height: 65px;
+  // height: 65px;
+  min-height: 68px;
+  gap: 2px;
 }
 
 .up-down-buttons__name-container {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  img {
-    width: 16px;
-  }
+  align-items: center;
+  gap: 8px;
 }
 
 .up-down-buttons__buttons-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: $background;
+  background-color: var(--componentBtns);
   border: none;
   border-radius: 10px;
-  height: 35px;
-  font-size: 16px;
+  min-height: 35px;
+  font-size: 18px;
   text-align: center;
 }
 
+.up-down-buttons__svg-wrapper {
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
 .up-down-buttons__plus-btn-wrapper {
-  background-color: $white;
+  background-color: var(--component);
+  // background-color: rgb(255, 255, 255);
   width: 30px;
   height: 20px;
   margin: 4px 8px;
@@ -194,9 +227,9 @@ $sectionBackground: #eaf1fc;
     width: 30px;
     height: 20px;
     font-size: 16px;
-    background-color: $button;
+    background-color: var(--button);
     border: none;
-    color: $white;
+    color: var(--component);
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -215,7 +248,8 @@ $sectionBackground: #eaf1fc;
 }
 
 .up-down-buttons__minus-btn-wrapper {
-  background-color: $white;
+  background-color: var(--component);
+  // background-color: rgb(255, 255, 255);
   width: 30px;
   height: 20px;
   margin: 4px 8px;
@@ -230,14 +264,14 @@ $sectionBackground: #eaf1fc;
     width: 30px;
     height: 20px;
     font-size: 16px;
-    background-color: $button;
+    background-color: var(--button);
     border: none;
-    color: $white;
+    color: var(--component);
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: 0.2s;
+    // transition: 0.2s;
 
     img {
       width: 15px;
@@ -252,44 +286,37 @@ $sectionBackground: #eaf1fc;
 
 // TOGGLE COMPONENT
 .accessibility-component__toggle-container {
-  background-color: $white;
+  background-color: var(--component);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.2rem;
   padding: 0.3rem 0.5rem;
   border-radius: 0.5rem;
-  min-height: 65px;
-  max-height: 65px;
-
-  img {
-    width: 12px;
-    // outline: 1px solid red;
-    margin: 0 10px;
+  min-height: 68px;
+  max-height: 68px;
+  transition: 0.5;
+  .toggle__svg-wrapper {
+    margin-right: 10px;
   }
 
   .toggle__name-container {
     display: flex;
-    // outline: 2px solid salmon;
+    align-items: center;
     line-height: 14px;
-  }
-
-  .toggle__name-wrapper {
-    // outline: 1px solid pink;
   }
 }
 
 ///
 ///
-///
 .toggle__btn {
   position: relative;
   width: 60px;
-  height: 25px;
+  height: 30px;
   display: flex;
   padding: 0.3rem 0.3rem;
   border-radius: 20px;
-  background-color: $background;
+  background-color: var(--componentBtns);
   cursor: pointer;
   border: none;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
@@ -301,21 +328,21 @@ $sectionBackground: #eaf1fc;
   top: 2px;
   left: 5px;
   width: 30px;
-  height: 21px;
+  height: 25px;
   border-radius: 15px;
-  background-color: $offTogledBtn;
+  background-color: var(--offToggledBtn);
   // background-color: red;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.24);
   transition: 0.2s;
 }
 
 .toggle__btn.on {
-  background-color: $background;
+  background-color: var(--componentBtns);
 }
 
 .toggle__btn.on::before {
   transform: translateX(65%);
-  background-color: $button;
+  background-color: var(--button);
 }
 //
 
@@ -324,23 +351,11 @@ $sectionBackground: #eaf1fc;
   border: none;
   border-radius: 50%;
   padding: 0;
-  // margin: 0;
-  // width: 50px;
   height: 35px;
-  // transform: translateY(-2px);
-}
-.reset-btn-img,
-.close-btn-img {
-  width: 100%;
-  height: 100%;
-  transform: translateY(2px);
 }
 
 /// TOOLS ///
-
 .accessibility-tools__cursor-line {
-  // display: flex;
-  // justify-content: center;
   width: 300px;
   height: 10px;
   background-color: red;
@@ -373,21 +388,4 @@ $sectionBackground: #eaf1fc;
   width: 100%;
   height: 150px;
   z-index: 999999;
-}
-
-.cursor {
-  position: absolute;
-  top: 100rem;
-  left: 30px;
-  width: 64px;
-  height: 64px;
-  background-image: url("https://cdn-icons-png.flaticon.com/512/9915/9915925.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: 999999;
-}
-
-body * {
-  // cursor: none;
 }
