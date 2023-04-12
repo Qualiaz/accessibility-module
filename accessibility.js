@@ -9,19 +9,36 @@ class Accessibility {
     this.#dom.init();
     this.#controller.init();
     this.#setTheme("dark");
+    this.#helpersFunc.wrapBody();
   }
 
   contentAdjustments = {
     state: {
-      contentScale: 1,
+      contentScale: 100, // %
       fontSize: 1,
       lineHeight: 1,
-      letterSpacing: 0, //px
+      letterSpacing: 0, // px
       isTitlesHighlight: false,
       isLinksHighlight: false,
     },
     contentScaling: {
       //tba
+      increase() {
+        this.resizeContent("increase");
+      },
+
+      decrease() {
+        this.resizeContent("decrease");
+      },
+
+      resizeContent(direction) {
+        const bodyWrapper = document.getElementById("bodyWrapper");
+        if (direction === "increase") this.state.contentScale += 5;
+        if (direction === "decrease") this.state.contentScale -= 5;
+        //prettier-ignore
+        this._util.percentageRender('spanPercentageContentScaling', 'contentScale', false)
+        bodyWrapper.style.setProperty("zoom", `${this.state.contentScale}%`);
+      },
     },
     fontSizing: {
       increase() {
@@ -74,7 +91,8 @@ class Accessibility {
       },
 
       _resizeLineHeight(direction) {
-        const texts = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
+        const bodyWrapper = document.getElementById("bodyWrapper");
+        const texts = bodyWrapper.querySelectorAll("p, h1, h2, h3, h4, h5, h6");
         if (direction === "increase") {
           this.state.lineHeight += 0.1;
           this._util.percentageRender("spanPercentageLineHeight", "lineHeight");
@@ -139,7 +157,8 @@ class Accessibility {
         );
       },
       _resizeLetterSpacing(direction) {
-        const texts = document.querySelectorAll("p, h1, h2,h3");
+        const bodyWrapper = document.getElementById("bodyWrapper");
+        const texts = bodyWrapper.querySelectorAll("p, h1,h2,h3,h4,h5,h6,span");
         texts.forEach((text) => {
           const elStyles = window.getComputedStyle(text);
           let letterSpacing =
@@ -165,8 +184,6 @@ class Accessibility {
     },
     titlesHighlight: {
       on() {
-        this.state.isTitlesHighlight = true;
-        this._util.toggleRender("btnTitlesHighlight", true);
         const headers = document.querySelectorAll("h1, h2, h3, h4, h5 ,h6");
         headers.forEach((header) => {
           const styles = window.getComputedStyle(header);
@@ -178,6 +195,9 @@ class Accessibility {
 
           header.style.outline = "2px solid #a81a2d";
         });
+
+        this.state.isTitlesHighlight = true;
+        this._util.toggleRender("btnTitlesHighlight", true);
       },
       off() {
         this.state.isTitlesHighlight = false;
@@ -190,8 +210,6 @@ class Accessibility {
     },
     linksHighlight: {
       on() {
-        this.state.isLinksHighlight = true;
-        this._util.toggleRender("btnLinksHighlight", true);
         const anchors = document.querySelectorAll("a");
         anchors.forEach((anchor) => {
           const styles = window.getComputedStyle(anchor);
@@ -203,6 +221,9 @@ class Accessibility {
 
           anchor.style.outline = "2px solid #1744c0";
         });
+
+        this.state.isLinksHighlight = true;
+        this._util.toggleRender("btnLinksHighlight", true);
       },
       off() {
         this.state.isLinksHighlight = false;
@@ -221,15 +242,21 @@ class Accessibility {
       this.linksHighlight.off();
     },
     _util: {
-      percentageRender: (elId, state) => {
+      percentageRender: (elId, state, isTimes100 = true) => {
         const percentageEl = document.getElementById(elId);
-        percentageEl.innerText =
-          Math.round(this.contentAdjustments.state[state] * 100) + "%";
+        if (!isTimes100)
+          percentageEl.innerText =
+            Math.round(this.contentAdjustments.state[state]) + "%";
+        else
+          percentageEl.innerText =
+            Math.round(this.contentAdjustments.state[state] * 100) + "%";
       },
+
       pxRender: (elId, state) => {
         const pxEl = document.getElementById(elId);
         pxEl.innerText = state + " px";
       },
+
       toggleRender: (elId, state) => {
         const toggleBtnEl = document.getElementById(elId);
         if (state) toggleBtnEl.classList.add("on");
@@ -245,6 +272,7 @@ class Accessibility {
       isInvert: false,
       isBackgroundWhite: false,
     },
+
     contrast: {
       increase() {
         if (this.state.contrast >= 200) return;
@@ -267,6 +295,7 @@ class Accessibility {
         this._util.percentageRender("spanPercentageContrast", "contrast");
       },
     },
+
     saturation: {
       increase() {
         if (this.state.saturation >= 200) return;
@@ -276,7 +305,7 @@ class Accessibility {
         this._util.percentageRender("spanPercentageSaturation", "saturation");
       },
       decrease() {
-        if (this.state.saturation <= 10) return;
+        if (this.state.saturation <= 0) return;
         const body = document.querySelector("body :not(#accessibilityMenu)");
         this.state.saturation -= 10;
         body.style.filter = `saturate(${this.state.saturation}%)`;
@@ -289,26 +318,34 @@ class Accessibility {
         this._util.percentageRender("spanPercentageSaturation", "saturation");
       },
     },
+
     invert: {
       on() {
-        const body = document.querySelectorAll(
-          "body * :not(img):not(#accessibilityMenu *)"
-        );
-        body.forEach((el) => {
-          el.style.filter = `invert(100%)`;
+        const body = document.querySelector("#bodyWrapper");
+        const imgs = body.querySelectorAll("img");
+
+        body.style.filter = `invert(100%)`;
+        imgs.forEach((img) => {
+          img.style.filter = `invert(100%)`;
         });
+
         this.state.isInvert = true;
         this._util.toggleRender("btnColorsInversed", true);
       },
       off() {
-        const body = document.querySelectorAll("body * :not(img)");
-        body.forEach((el) => {
-          el.style.filter = `invert(0%)`;
+        const body = document.querySelector("#bodyWrapper");
+        const imgs = body.querySelectorAll("img");
+
+        body.style.filter = `invert(0%)`;
+        imgs.forEach((img) => {
+          img.style.filter = `invert(0%)`;
         });
+
         this._util.toggleRender("btnColorsInversed", false);
         this.state.isInvert = false;
       },
     },
+
     backgroundWhite: {
       on() {
         const allElems = document.querySelectorAll(
@@ -437,7 +474,7 @@ class Accessibility {
           img.style.visibility = "hidden";
         });
         this.state.isHideImages = true;
-        this.util.toggleRender("btnHideImages", true);
+        this.util.toggleRender("btnHiddenImages", true);
       },
       off() {
         const imgs = document.querySelectorAll("img:not(.accessibility__img)");
@@ -445,7 +482,7 @@ class Accessibility {
           img.style.visibility = img.dataset.initialImgVisibility;
         });
         this.state.isHideImages = false;
-        this.util.toggleRender("btnHideImages", false);
+        this.util.toggleRender("btnHiddenImages", false);
       },
     },
 
@@ -493,6 +530,7 @@ class Accessibility {
 
         elems.forEach((elem) => {
           elem.addEventListener("click", clickHandler);
+          elem.addEventListener("focus", clickHandler);
         });
 
         this.tools.util.state.clickHandler = clickHandler;
@@ -511,6 +549,13 @@ class Accessibility {
         this.state.isScreenReader = false;
         this.util.toggleRender("btnScreenReader", false);
       },
+    },
+
+    reset() {
+      this.flashlight.off();
+      this.readingGuide.off();
+      this.hideImages.off();
+      this.screenReader.off();
     },
 
     util: {
@@ -887,7 +932,7 @@ class Accessibility {
       );
 
       const hideImagesComponent = this.createToggleComponent(
-        "HIDE IMAGES",
+        "HIDDEN IMAGES",
         this.icons.hiddenImages
       );
 
@@ -1139,6 +1184,8 @@ class Accessibility {
       setLang(lang = this.state.lang) {
         const accessibilityTitle =
           document.getElementById("accessibilityTitle");
+
+        /// CONTENT ///
         const spanNameContentAdjusting = document.getElementById(
           "spanNameContentAdjusting"
         );
@@ -1162,7 +1209,7 @@ class Accessibility {
           "accessibilityLangSlider"
         );
 
-        // colors
+        /// COLORS ///
         const spanNameColorAdjustments = document.getElementById(
           "spanNameColorAdjustments"
         );
@@ -1175,14 +1222,28 @@ class Accessibility {
         const spanNameWhiteBackground = document.getElementById(
           "spanNameWhiteBackground"
         );
-        //
+
+        /// TOOLS ///
+        const spanNameTools = document.getElementById("spanNameTools");
+        const spanNameReadingGuide = document.getElementById(
+          "spanNameReadingGuide"
+        );
+        const spanNameFlashlight =
+          document.getElementById("spanNameFlashlight");
+        const spanNameHiddenImages = document.getElementById(
+          "spanNameHiddenImages"
+        );
+        const spanNameScreenReader = document.getElementById(
+          "spanNameScreenReader"
+        );
+
         if (lang === "ro") {
           this.state.lang = "ro";
           document.dispatchEvent(new Event("langChanged"));
-
+          //main
           accessibilityTitle.innerText = "SETARI ACCESIBILITATE";
           spanNameContentAdjusting.innerText = "AJUSTARE CONTINUT";
-          //content submenu
+          //content
           spanNameContentScaling.innerText = "SCALARE CONTINUT";
           spanNameFontSizing.innerText = "MARIME FONT";
           spanNameLineHeight.innerText = "SPATIERE RANDURI";
@@ -1190,12 +1251,19 @@ class Accessibility {
           spanNameTitlesHighlight.innerText = "TITLURI EVIDENTIATE";
           spanNameLinksHighlight.innerText = "LINKURI EVIDENTIATE";
 
-          //colors submenu
+          //colors
           spanNameColorAdjustments.innerText = "AJUSTARE CULORI";
           spanNameContrast.innerText = "CONTRAST";
           spanNameSaturation.innerText = "SATURATIE";
           spanNameColorsInversed.innerText = "INVERSARE CULORI";
           spanNameWhiteBackground.innerText = "FUNDAL ALB";
+
+          //tools
+          spanNameTools.innerText = "UNELTE";
+          spanNameReadingGuide.innerText = "GHID CITIRE";
+          spanNameFlashlight.innerText = "LANTERNA";
+          spanNameHiddenImages.innerText = "IMAGINI ASCUNSE";
+          spanNameScreenReader.innerText = "CITITOR ECRAN";
 
           accessibilityLangSlider.classList.remove(
             "accessibility-language__slider--eng"
@@ -1211,7 +1279,7 @@ class Accessibility {
 
           accessibilityTitle.innerText = "ACCESSIBILITY SETTINGS";
           spanNameContentAdjusting.innerText = "CONTENT ADJUSTING";
-          //content submenu
+          //content
           spanNameContentScaling.innerText = "CONTENT SCALING";
           spanNameFontSizing.innerText = "FONT SIZING";
           spanNameLineHeight.innerText = "LINE HEIGHT";
@@ -1219,12 +1287,18 @@ class Accessibility {
           spanNameTitlesHighlight.innerText = "TITLES HIGHLIGHT";
           spanNameLinksHighlight.innerText = "LINKS HIGHLIGHT";
 
-          //colors submenu
+          //colors
           spanNameColorAdjustments.innerText = "COLORS ADJUSTING";
           spanNameContrast.innerText = "CONTRAST";
           spanNameSaturation.innerText = "SATURATION";
           spanNameColorsInversed.innerText = "COLORS INVERSED";
           spanNameWhiteBackground.innerText = "WHITE BACKGROUND";
+
+          spanNameTools.innerText = "TOOLS";
+          spanNameReadingGuide.innerText = "READING GUIDE";
+          spanNameFlashlight.innerText = "FLASHLIGHT";
+          spanNameHiddenImages.innerText = "HIDDEN IMAGES";
+          spanNameScreenReader.innerText = "SCREEN READER";
 
           accessibilityLangSlider.classList.remove(
             "accessibility-language__slider--ro"
@@ -1277,6 +1351,9 @@ class Accessibility {
     //bind this -> contentAdjustments
     //prettier-ignore
     contentAdjusting() {
+      const contentResetBtn = document.getElementById('contentResetBtn')
+      const plusBtnContentScaling = document.getElementById('plusBtnContentScaling')
+      const minusBtnContentScaling = document.getElementById('minusBtnContentScaling')
       const plusBtnFontSizing = document.getElementById("plusBtnFontSizing");
       const minusBtnFontSizing = document.getElementById("minusBtnFontSizing");
       const plusBtnLineHeight = document.getElementById("plusBtnLineHeight");
@@ -1285,9 +1362,11 @@ class Accessibility {
       const minusBtnLetterSpacing = document.getElementById("minusBtnLetterSpacing");
       const btnTitlesHighlight = document.getElementById("btnTitlesHighlight");
       const btnLinksHighlight = document.getElementById("btnLinksHighlight");
-      const contentResetBtn = document.getElementById('contentResetBtn')
 
       contentResetBtn.addEventListener('click', () => this.reset())
+
+      plusBtnContentScaling.addEventListener('click', () => this.contentScaling.increase())
+      minusBtnContentScaling.addEventListener('click', () => this.contentScaling.decrease())
 
       plusBtnFontSizing.addEventListener("click", () => this.fontSizing.increase())
       minusBtnFontSizing.addEventListener("click", () => this.fontSizing.decrease())
@@ -1338,10 +1417,13 @@ class Accessibility {
     //bind this -> tools
     //prettier-ignore
     tools() {
+      const resetBtn = document.getElementById('accessibilityToolsResetBtn')
       const btnReadingGuide = document.getElementById('btnReadingGuide')
       const btnFlashlight = document.getElementById('btnFlashlight')
-      const btnHideImages = document.getElementById('btnHideImages')
+      const btnHideImages = document.getElementById('btnHiddenImages')
       const btnScreenReader = document.getElementById('btnScreenReader')
+
+      resetBtn.addEventListener('click', () => this.reset())
 
       btnReadingGuide.addEventListener('click', () => {
         this.state.isReadingGuide ?
@@ -1403,6 +1485,7 @@ class Accessibility {
 
   //prettier-ignore
   #bindObjects() {
+    this.#helpersFunc.bindObj(this.contentAdjustments.contentScaling,"resizeContent",this.contentAdjustments);
     this.#helpersFunc.bindObj(this.contentAdjustments.fontSizing,"_resizeFont",this.contentAdjustments);
     this.#helpersFunc.bindObj(this.contentAdjustments.lineHeight,"_resizeLineHeight",this.contentAdjustments);
     this.#helpersFunc.bindObj(this.contentAdjustments.letterSpacing,"increase",this.contentAdjustments);
@@ -1430,8 +1513,9 @@ class Accessibility {
     this.#helpersFunc.bindObj(this.tools.flashlight,"off",this.tools);
     this.#helpersFunc.bindObj(this.tools.hideImages,"on",this.tools);
     this.#helpersFunc.bindObj(this.tools.hideImages,"off",this.tools);
-    // this.#helpersFunc.bindObj(this.tools.screenReader,"on",this.tools);
     this.#helpersFunc.bindObj(this.tools.screenReader,"off",this.tools);
+    this.#helpersFunc.bindObj(this.tools.screenReader,"off",this.tools);
+
     
     this.#helpersFunc.bindObj(this.#dom._util, "setLang",this.#dom);
 
@@ -1443,6 +1527,27 @@ class Accessibility {
   #helpersFunc = {
     bindObj(targetObj, methodName, objToBind) {
       targetObj[methodName] = targetObj[methodName].bind(objToBind);
+    },
+    wrapBody() {
+      let bodyWrapper = document.createElement("div");
+      bodyWrapper.id = "bodyWrapper";
+      let bodyChildren = Array.from(document.body.children);
+      for (let i = 0; i < bodyChildren.length; i++) {
+        if (bodyChildren[i].id === "accessibilityMenu") continue;
+        if (bodyChildren[i].tagName === "SCRIPT") continue;
+        bodyWrapper.appendChild(bodyChildren[i]);
+      }
+      document.body.prepend(bodyWrapper);
+    },
+    unwrapBody() {
+      let bodyWrapper = document.getElementById("bodyWrapper");
+      if (bodyWrapper) {
+        let bodyChildren = Array.from(bodyWrapper.children);
+        for (let i = 0; i < bodyChildren.length; i++) {
+          document.body.appendChild(bodyChildren[i]);
+        }
+        bodyWrapper.remove();
+      }
     },
   };
 }
